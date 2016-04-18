@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+<form action="{{ url_for("manual_feed_data") }}" method="POST" enctype="multipart/form-data">
+    <p>Station: <select name="station">
+        {% for station in stations %}
+            <option value="{{ station.id }}">{{ station.name }} - {{ station.location }}</option>
+        {% endfor %}
+    </select></p>
+    <p><textarea name="data"></textarea></p>
+    <p><button type="submit">Submit</button></p>
+</form>
+{% endblock %}

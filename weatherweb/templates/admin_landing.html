@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+<ul>
+{% for item in admin_items %}
+    <li><a href="{{ item.href }}">{{ item.name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

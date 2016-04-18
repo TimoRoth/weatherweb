@@ -14,3 +14,5 @@ db = SQLAlchemy(app)
 import weatherweb.database
 import weatherweb.views
 import weatherweb.cron
+
+weatherweb.cron.init_cron()

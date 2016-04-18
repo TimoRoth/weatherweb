@@ -51,7 +51,7 @@ class MeasurementData(db.Model):
     __tablename__ = "measurementdata"
 
     id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Float, nullable=False)
+    data = db.Column(db.Float)
 
     measurement_id = db.Column(db.Integer, db.ForeignKey("measurement.id", onupdate="CASCADE", ondelete="RESTRICT"),
                                nullable=False, index=True)
@@ -80,9 +80,9 @@ class ExtremesData(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    min_data = db.Column(db.Float, nullable=False)
+    min_data = db.Column(db.Float)
     min_time = db.Column(db.Time, nullable=False)
-    max_data = db.Column(db.Float, nullable=False)
+    max_data = db.Column(db.Float)
     max_time = db.Column(db.Time, nullable=False)
 
     extremes_id = db.Column(db.Integer, db.ForeignKey("extremes.id", onupdate="CASCADE", ondelete="RESTRICT"),
