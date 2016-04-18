@@ -1,7 +1,7 @@
 from werkzeug.security import check_password_hash
 from functools import wraps
 from flask import request, Response
-from weatherweb import app
+from .. import app
 
 
 def check_auth(user, passwd):

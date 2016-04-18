@@ -54,3 +54,18 @@ def station_measurements(station_id):
         })
 
     return jsonify({"measurements": res})
+
+
+@app.route("/json/sensor_data/<sensor_id>")
+def sensor_data(sensor_id):
+    res = []
+
+    sensor = Sensor.query\
+        .options(db.subqueryload(Sensor.data).subqueryload(MeasurementData.measurement))\
+        .get(sensor_id)
+
+    for data in sensor.data:
+        # res.append([int(data.measurement.datetime.timestamp()) * 1000, data.data])
+        res.append([data.measurement.datetime, data.data])
+
+    return jsonify({"data": res})

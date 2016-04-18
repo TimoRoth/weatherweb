@@ -1,14 +1,17 @@
 import sys
 
 from sqlalchemy.exc import SQLAlchemyError
-from flask import render_template, url_for, request, Response
+from flask import render_template, flash, url_for, request, Response, redirect
 
-from weatherweb import app
-from weatherweb.database import *
-from weatherweb.utils.auth import requires_auth
-from weatherweb.utils.list_routes import list_routes
-from weatherweb.utils.pydl15.parse import parse as parse_dl15
-from weatherweb.utils.measurements import import_mesaurement
+from .. import app
+from ..database import *
+from ..utils.auth import requires_auth
+from ..utils.list_routes import list_routes
+from ..utils.pydl15.parse import parse as parse_dl15
+from ..utils.measurements import import_measurement
+
+from .forms import AddStationForm, AddSensorForm, ManualFeedForm
+from .forms import get_station_choices
 
 
 @app.route("/admin/")
@@ -28,10 +31,56 @@ def admin():
     return render_template("admin_landing.html", admin_items=items)
 
 
-@app.route("/admin/add_station")
+@app.route("/admin/add_station", methods=["GET", "POST"])
 @requires_auth
 def add_station():
-    return "Test"
+    form = AddStationForm()
+
+    if form.validate_on_submit():
+        sta = Station()
+        sta.name = form.name.data
+        sta.location = form.location.data
+        sta.address = form.address.data
+        sta.timezone = form.timezone.data
+        db.session.add(sta)
+        db.session.commit()
+
+        flash("Created station %s with ID %s" % (form.name.data, sta.id))
+        return redirect(url_for("admin"))
+
+    return render_template("generic_form.html", form=form, form_dest="add_station", title="Add Station")
+
+
+@app.route("/admin/add_sensor", methods=["GET", "POST"])
+@requires_auth
+def add_sensor():
+    form = AddSensorForm()
+    form.station.choices = get_station_choices(with_auto=False)
+
+    if form.validate_on_submit():
+        sta = Station.query.get(form.station.data)
+
+        if sta is None:
+            flash("Station %s not found!" % form.station.data)
+            return redirect(url_for("admin"))
+
+        sen = Sensor()
+
+        sen.name = form.name.data
+        sen.comment = form.comment.data
+        sen.unit = form.unit.data
+        sen.position = form.position.data
+        sen.station = sta
+
+        db.session.add(sen)
+        db.session.commit()
+
+        flash("Sensor #%s added to station #%s on position %s!" % (sen.id, sta.id, sen.position))
+
+        form.position.raw_data = None
+        form.position.data = sen.position + 1
+
+    return render_template("generic_form.html", form=form, form_dest="add_sensor", title="Add Sensor")
 
 
 @app.route("/admin/init_db")
@@ -39,51 +88,43 @@ def add_station():
 def init_db():
     try:
         db.create_all()
+        flash("Successfully initialized database")
     except SQLAlchemyError:
-        return sys.exc_info()[0]
-    return "OK"
+        flash(sys.exc_info()[0])
+    return redirect(url_for("admin"))
 
 
-@app.route("/admin/manual_feed", methods=['GET'])
+@app.route("/admin/manual_feed", methods=["GET", "POST"])
 @requires_auth
 def manual_feed():
-    stations = [{
-        "name": "Automatic",
-        "location": "Automatic",
-        "id": -1
-    }]
+    form = ManualFeedForm()
+    form.station.choices = get_station_choices()
 
-    for station in Station.query.all():
-        stations.append({
-            "name": station.name,
-            "location": station.location,
-            "id": station.id,
-        })
+    if form.validate_on_submit():
+        try:
+            name, data = parse_dl15(form.station_data.data)
+            station_id = form.station.data
 
-    return render_template("admin_manual_feed.html", stations=stations)
+            if station_id == -1:
+                stations = Station.query.filter(Station.name == name).all()
+                if len(stations) > 1:
+                    return "Station name not unique, autodetection failed."
+                elif len(stations) <= 0:
+                    return "Station not found!"
+                station = stations[0]
+            else:
+                station = Station.query.filter(Station.id == station_id).first()
 
+            if station is None:
+                return "Station not found!"
 
-@app.route("/admin/manual_feed", methods=['POST'])
-@requires_auth
-def manual_feed_data():
-    name, data = parse_dl15(request.form["data"])
-    station_id = int(request.form["station"])
+            cnt = import_measurement(station, data)
+            db.session.commit()
 
-    if station_id == -1:
-        stations = Station.query.filter(Station.name == name).all()
-        if len(stations) > 1:
-            return "Station name not unique, autodetection failed."
-        elif len(stations) <= 0:
-            return "Station not found!"
-        station = stations[0]
-    else:
-        station = Station.query.filter(Station.id == station_id).first()
+            flash("Successfully imported %s data lines!" % cnt)
+            return redirect(url_for("admin"))
+        except:
+            db.session.rollback()
+            raise
 
-    if station is None:
-        return "Station not found!"
-
-    import_mesaurement(station, data)
-
-    db.session.commit()
-
-    return station.location
+    return render_template("generic_form.html", form=form, form_dest="manual_feed", title="Manual Data Upload")

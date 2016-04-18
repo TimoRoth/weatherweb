@@ -15,9 +15,13 @@ setup(
         "Flask-SQLAlchemy",
         "Flask-Script",
         "Flask-Assets",
+        "Flask-WTF",
         "Jinja2",
+        "jsmin",
+        "cssmin",
         "APScheduler",
         "Werkzeug",
         "pyserial",
+        "pytz",
     ]
 )

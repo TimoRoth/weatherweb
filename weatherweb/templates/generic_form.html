@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ title or "Unknown" }}{% endblock %}
+{% block body %}
+{{ super() }}
+<form action="{{ url_for(form_dest) }}" method="POST" enctype="multipart/form-data">
+<table>
+<tbody>
+{% for field in form %}
+    <tr>
+    {% if field.type == "CSRFTokenField" %}
+        <td></td>
+        <td>{{ field }}</td>
+    {% elif field.type == "BooleanField" %}
+        <td></td>
+        <td>{{ field }} {{ field.label }}</td>
+    {% else %}
+        <td>{{ field.label }}</td>
+        <td>{{ field }}</td>
+    {% endif %}
+    </tr>
+{% endfor %}
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Submit"></td>
+    </tr>
+</tbody>
+</table>
+</form>
+{% endblock %}

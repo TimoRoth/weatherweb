@@ -1,4 +1,4 @@
-from weatherweb import app
+from .. import app
 from flask import url_for
 
 

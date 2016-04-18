@@ -12,6 +12,7 @@ if os.environ.get("WEATHERWEB_SETTINGS") is not None:
 db = SQLAlchemy(app)
 
 import weatherweb.database
+import weatherweb.assets
 import weatherweb.views
 import weatherweb.cron
 

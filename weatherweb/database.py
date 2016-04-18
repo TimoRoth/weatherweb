@@ -1,4 +1,21 @@
-from weatherweb import db
+from sqlalchemy import types
+from datetime import datetime
+from dateutil.tz import tzutc
+from . import db
+
+
+class UTCDateTime(types.TypeDecorator):
+    impl = types.DateTime
+
+    def process_bind_param(self, value, engine):
+        if value is not None:
+            return value.astimezone(tzutc())
+
+    def process_result_value(self, value, engine):
+        if value is not None:
+            return datetime(value.year, value.month, value.day,
+                            value.hour, value.minute, value.second,
+                            value.microsecond, tzinfo=tzutc())
 
 
 class Station(db.Model):
@@ -8,7 +25,7 @@ class Station(db.Model):
     name = db.Column(db.String(16), nullable=False)
     location = db.Column(db.Text, nullable=False, default="")
     address = db.Column(db.String(128))
-    utc_offset = db.Column(db.Integer, nullable=False)
+    timezone = db.Column(db.String(32), nullable=False)
 
     sensors = db.relationship("Sensor", backref=db.backref("station"))
     measurements = db.relationship("Measurement", backref=db.backref("station"))
@@ -35,7 +52,7 @@ class Measurement(db.Model):
     __tablename__ = "measurement"
 
     id = db.Column(db.Integer, primary_key=True)
-    datetime = db.Column(db.DateTime, nullable=False, index=True)
+    datetime = db.Column(UTCDateTime, nullable=False, index=True)
 
     station_id = db.Column(db.Integer, db.ForeignKey("station.id", onupdate="CASCADE", ondelete="CASCADE"),
                            nullable=False, index=True)

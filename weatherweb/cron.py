@@ -2,7 +2,7 @@ from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from weatherweb import app
-from weatherweb.database import *
+from .database import *
 
 
 def init_cron():

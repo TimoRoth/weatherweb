@@ -1,0 +1,10 @@
+{%  extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    {% assets "charts_js" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block body %}
+    BLAH
+{% endblock %}
