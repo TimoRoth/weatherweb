@@ -13,13 +13,15 @@ def fixup_datetime(fields):
     return fields
 
 
-def parse(data):
+def parse_dl15(data):
     if isinstance(data, str):
         data = [x for x in data.split("\n") if x.strip()]
     res = []
     res_name = ""
     for line in data:
         line = line.strip()
+        if not line or line.startswith("Data"):
+            continue
         fields = [f for f in line.split(" ") if f]
         if line.startswith("END"):
             if len(fields) < 4:
@@ -30,3 +32,13 @@ def parse(data):
             fields = fixup_datetime(fields)
             res.append(fields)
     return res_name, res
+
+
+def parse_dl15_gen(data):
+    for line in data:
+        line = line.strip()
+        if not line or line.startswith("Data") or line.startswith("END"):
+            continue
+        fields = [f for f in line.split(" ") if f]
+        fields = fixup_datetime(fields)
+        yield fields

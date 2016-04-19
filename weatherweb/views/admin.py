@@ -7,8 +7,9 @@ from .. import app
 from ..database import *
 from ..utils.auth import requires_auth
 from ..utils.list_routes import list_routes
-from ..utils.pydl15.parse import parse as parse_dl15
+from ..utils.pydl15.parse import parse_dl15
 from ..utils.measurements import import_measurement
+from ..cron import do_fetch
 
 from .forms import AddStationForm, AddSensorForm, ManualFeedForm
 from .forms import get_station_choices
@@ -36,17 +37,22 @@ def admin():
 def add_station():
     form = AddStationForm()
 
-    if form.validate_on_submit():
-        sta = Station()
-        sta.name = form.name.data
-        sta.location = form.location.data
-        sta.address = form.address.data
-        sta.timezone = form.timezone.data
-        db.session.add(sta)
-        db.session.commit()
+    if form.is_submitted():
+        if form.validate():
+            sta = Station()
+            sta.name = form.name.data
+            sta.location = form.location.data
+            sta.address = form.address.data
+            sta.timezone = form.timezone.data
+            sta.is_dst = form.is_dst.data
+            db.session.add(sta)
+            db.session.commit()
 
-        flash("Created station %s with ID %s" % (form.name.data, sta.id))
-        return redirect(url_for("admin"))
+            flash("Created station %s with ID %s" % (form.name.data, sta.id))
+            return redirect(url_for("admin"))
+        else:
+            flash("Form validation failed!")
+            flash(form.errors)
 
     return render_template("generic_form.html", form=form, form_dest="add_station", title="Add Station")
 
@@ -128,3 +134,11 @@ def manual_feed():
             raise
 
     return render_template("generic_form.html", form=form, form_dest="manual_feed", title="Manual Data Upload")
+
+
+@app.route("/admin/trigger_fetch")
+@requires_auth
+def trigger_fetch():
+    do_fetch()
+    flash("Fetch done")
+    return redirect(url_for("admin"))

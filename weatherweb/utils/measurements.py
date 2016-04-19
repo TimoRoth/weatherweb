@@ -1,7 +1,5 @@
 from sqlalchemy.exc import IntegrityError
 from ..database import *
-from datetime import datetime, timedelta
-import pytz
 
 
 def import_measurement(station: Station, data):
@@ -11,11 +9,9 @@ def import_measurement(station: Station, data):
     sensors = [(s.id, s.position) for s in station.sensors]
     db.session.flush()
 
-    tz = pytz.timezone(station.timezone)
-
     for line in data:
         try:
-            mes = Measurement(datetime=tz.localize(line[0], is_dst=False), station_id=station_id)
+            mes = Measurement(datetime=line[0], station_id=station_id)
             db.session.add(mes)
             db.session.flush()
             mesdata = []

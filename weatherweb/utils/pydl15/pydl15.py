@@ -12,7 +12,7 @@ class DL15:
     def __init__(self, verbose=False):
         self.port = None
         self.tn = None
-        self.tn_timeout = 5
+        self.tn_timeout = 30
         self.ser_timeout = 2
         self.verbose = verbose
 
@@ -121,15 +121,24 @@ class DL15:
         self.send_raw_command(b)
 
     def readlines(self, count=-1):
-        lines = []
+        res = []
         while count != 0:
             count -= 1
             line = self.readline()
             if line:
-                lines.append(line.rstrip())
+                res.append(line)
             if not line or line.lstrip()[:3] == "END" or line[:1] == "?":
                 break
-        return lines
+        return res
+
+    def readlines_gen(self, count=-1):
+        while count != 0:
+            count -= 1
+            line = self.readline()
+            if line:
+                yield line.rstrip()
+            if not line or line.lstrip()[:3] == "END" or line[:1] == "?":
+                break
 
     def power_off(self):
         self.send_command("PD")
@@ -161,9 +170,12 @@ class DL15:
         self.send_command("DJ%s" % (dt.year % 100))
         self.readlines(3)
 
-    def get_all_data(self):
+    def get_all_data(self, use_yield=False):
         self.send_command("GS")
-        return self.readlines()
+        if use_yield:
+            return self.readlines_gen()
+        else:
+            return self.readlines()
 
     @staticmethod
     def _encode_since(dt):
@@ -181,7 +193,7 @@ class DL15:
         y = (dt.year % 100) + 28
         return struct.pack("BBB", d, mo, y)
 
-    def get_data(self, since=None, day=None):
+    def get_data(self, since=None, day=None, use_yield=False):
         if since is not None:
             cmd = b"ds" + self._encode_since(since)
             self._log("GET DATA SINCE %s.%s.%s %s:%s" %
@@ -193,9 +205,12 @@ class DL15:
             cmd = b"SS"
             self._log("GET DATA")
         self.send_raw_command(cmd)
-        return self.readlines()
+        if use_yield:
+            return self.readlines_gen()
+        else:
+            return self.readlines()
 
-    def get_extremes(self, since=None, day=None):
+    def get_extremes(self, since=None, day=None, use_yield=False):
         if since is not None:
             cmd = b"de" + self._encode_since(since)
             self._log("GET EXTREMES SINCE %s.%s.%s %s:%s" %
@@ -207,7 +222,10 @@ class DL15:
             cmd = b"EE"
             self._log("GET EXTREMES")
         self.send_raw_command(cmd)
-        return self.readlines()
+        if use_yield:
+            return self.readlines_gen()
+        else:
+            return self.readlines()
 
     def get_current_data(self):
         self.send_command("mm")

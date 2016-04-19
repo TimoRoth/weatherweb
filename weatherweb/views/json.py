@@ -1,4 +1,5 @@
 from flask import Response, jsonify
+import pytz
 
 from weatherweb import app
 from weatherweb.database import *
@@ -23,37 +24,12 @@ def list_stations():
             "name": station.name,
             "location": station.location,
             "address": station.address,
-            "utc_offset": station.utc_offset,
+            "timezone": station.timezone,
+            "is_dst": station.is_dst,
             "sensors": sensors
         })
 
     return jsonify({"stations": res})
-
-
-@app.route("/json/station_measurements/<station_id>")
-def station_measurements(station_id):
-    res = []
-
-    station = Station.query\
-        .options(db.joinedload(Station.measurements).subqueryload(Measurement.data), db.joinedload(Station.sensors))\
-        .filter(Station.id == station_id)\
-        .first()
-
-    if station is None:
-        return "{}"
-
-    for mes in station.measurements:
-        sensor_data = {}
-
-        for mesdata in mes.data:
-            sensor_data[mesdata.sensor.id] = mesdata.data
-
-        res.append({
-            "datetime": str(mes.datetime),
-            "sensor_data": sensor_data
-        })
-
-    return jsonify({"measurements": res})
 
 
 @app.route("/json/sensor_data/<sensor_id>")
@@ -61,11 +37,14 @@ def sensor_data(sensor_id):
     res = []
 
     sensor = Sensor.query\
-        .options(db.subqueryload(Sensor.data).subqueryload(MeasurementData.measurement))\
+        .options(db.subqueryload(Sensor.data).joinedload(MeasurementData.measurement))\
         .get(sensor_id)
+    station = sensor.station
+
+    tz = pytz.timezone(station.timezone)
 
     for data in sensor.data:
-        # res.append([int(data.measurement.datetime.timestamp()) * 1000, data.data])
-        res.append([data.measurement.datetime, data.data])
+        dt = tz.localize(data.measurement.datetime, is_dst=station.is_dst)
+        res.append([dt.timestamp() * 1000, data.data])
 
     return jsonify({"data": res})

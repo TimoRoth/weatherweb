@@ -1,17 +1,14 @@
 from datetime import date, datetime, timedelta
+from pydl15 import DL15
 
-from weatherweb.utils.pydl15 import DL15
 
 dl = DL15(verbose=True)
 
-# device = DL15.query_serial_device()
-# dl.connect_serial(device)
 dl.connect_telnet("134.102.87.169")
 
 dl.power_on()
 
-res = dl.get_data(day=date.today())
-#res = dl.get_help()
+res = dl.get_data(since=datetime(year=2016, month=4, day=19, hour=15, minute=40), use_yield=True)
 
 for r in res:
     print(r)
