@@ -1,4 +1,8 @@
+import serial.tools.list_ports
 from datetime import datetime
+import socket
+import select
+import serial
 import struct
 import time
 import sys
@@ -8,7 +12,7 @@ class DL15:
     def __init__(self, verbose=False):
         self.port = None
         self.tn = None
-        self.tn_timeout = 30
+        self.tn_timeout = 5
         self.ser_timeout = 2
         self.verbose = verbose
 
@@ -18,8 +22,6 @@ class DL15:
 
     @staticmethod
     def query_serial_device():
-        import serial.tools.list_ports
-
         ports = []
         for port in serial.tools.list_ports.comports():
             print("%s: %s" % (len(ports), port))
@@ -40,8 +42,6 @@ class DL15:
         return device
 
     def connect_serial(self, device):
-        import serial
-
         self._log("Opening serial port %s ..." % device)
         self.port = serial.Serial(device, baudrate=9600,
                                   bytesize=serial.SEVENBITS, parity=serial.PARITY_EVEN, stopbits=serial.STOPBITS_ONE,
@@ -49,10 +49,10 @@ class DL15:
         self._log("Success!")
 
     def connect_telnet(self, address, port=23):
-        import telnetlib
-
         self._log("Connecting to %s:%s ..." % (address, port))
-        self.tn = telnetlib.Telnet(host=address, port=port, timeout=self.tn_timeout)
+        self.tn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.tn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.tn.connect((address, port))
         self._log("Connected!")
 
     def close(self):
@@ -61,17 +61,20 @@ class DL15:
         if self.tn is not None:
             self.tn.close()
 
-    def send_raw(self, b):
-        if self.tn is not None:
-            self.tn.write(b)
-        else:
-            self.port.write(b)
-
     def readline(self):
         if self.port is not None:
             line = self.port.readline()
         elif self.tn is not None:
-            line = self.tn.read_until(b"\n", timeout=self.tn_timeout)
+            line = b""
+            while True:
+                r, w, x = select.select([self.tn], [], [], self.tn_timeout)
+                if r:
+                    b = self.tn.recv(1)
+                    line += b
+                    if b == b"\n":
+                        break
+                else:
+                    break
         else:
             line = b""
         self._log("GOT LINE: %s" % line)
@@ -80,14 +83,42 @@ class DL15:
 
     def power_on(self):
         self._log("POWER ON")
-        self.send_raw(b"\x00\n")
-        time.sleep(1)
+        if self.port is not None:
+            self.port.write(b"\x04\x00")
+            time.sleep(1)
+        elif self.tn is not None:
+            self.tn.sendall(b"\x04\x00")
+            self._log("RESETTING CONNECTION...")
+            while True:
+                self._log("...")
+                self.tn.sendall(b"\x03")
+                r, w, x = select.select([self.tn], [], [], 3)
+                if r:
+                    l = self.readlines()
+                    if not "".join(l).strip():
+                        continue
+                    self._log("RESET DONE")
+                    break
+
+    def send_raw_command(self, cmd):
+        if self.port is not None:
+            self.port.write(b"\x02" + cmd + b"\x03")
+        elif self.tn is not None:
+            self.tn.sendall(b"\x02" + cmd + b"\x03")
+
+    def cancel(self):
+        self._log("CANCEL")
+        if self.port is not None:
+            self.port.write(b"\x04")
+        elif self.tn is not None:
+            self.tn.sendall(b"\x04")
+            time.sleep(1)
 
     def send_command(self, cmd):
-        b = "\x02%s\x03\n" % str(cmd)
+        b = str(cmd)
         b = b.encode("ascii")
         self._log("SEND COMMAND '%s'" % cmd)
-        self.send_raw(b)
+        self.send_raw_command(b)
 
     def readlines(self, count=-1):
         lines = []
@@ -96,7 +127,7 @@ class DL15:
             line = self.readline()
             if line:
                 lines.append(line.rstrip())
-            if not line or line.lstrip()[:3] == "END":
+            if not line or line.lstrip()[:3] == "END" or line[:1] == "?":
                 break
         return lines
 
@@ -152,30 +183,30 @@ class DL15:
 
     def get_data(self, since=None, day=None):
         if since is not None:
-            cmd = b"\x02ds" + self._encode_since(since) + b"\x03\n"
+            cmd = b"ds" + self._encode_since(since)
             self._log("GET DATA SINCE %s.%s.%s %s:%s" %
                       (since.day, since.month, since.year, since.hour, since.minute))
         elif day is not None:
-            cmd = b"\x02ts" + self._encode_day(day) + b"\x03\n"
+            cmd = b"ts" + self._encode_day(day)
             self._log("GET DATA ON DAY %s.%s.%s" % (day.day, day.month, day.year))
         else:
-            cmd = b"\x02SS\x03\n"
+            cmd = b"SS"
             self._log("GET DATA")
-        self.send_raw(cmd)
+        self.send_raw_command(cmd)
         return self.readlines()
 
     def get_extremes(self, since=None, day=None):
         if since is not None:
-            cmd = b"\x02de" + self._encode_since(since) + b"\x03\n"
+            cmd = b"de" + self._encode_since(since)
             self._log("GET EXTREMES SINCE %s.%s.%s %s:%s" %
                       (since.day, since.month, since.year, since.hour, since.minute))
         elif day is not None:
-            cmd = b"\x02te" + self._encode_day(day) + b"\x03\n"
+            cmd = b"te" + self._encode_day(day)
             self._log("GET EXTREMES ON DAY %s.%s.%s" % (day.day, day.month, day.year))
         else:
-            cmd = b"\x02EE\x03\n"
+            cmd = b"EE"
             self._log("GET EXTREMES")
-        self.send_raw(cmd)
+        self.send_raw_command(cmd)
         return self.readlines()
 
     def get_current_data(self):
@@ -205,6 +236,3 @@ class DL15:
     def get_help(self):
         self.send_command("HH")
         return self.readlines()
-
-    def cancel(self):
-        self.send_raw(b"\x04\n")
