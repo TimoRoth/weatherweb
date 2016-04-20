@@ -10,6 +10,11 @@ setup(
 
     packages=find_packages(),
 
+    package_data={
+        'static': 'weatherweb/static/*',
+        'templates': 'weatherweb/templates/*'
+    },
+
     install_requires=[
         "Flask",
         "Flask-SQLAlchemy",
