@@ -6,7 +6,7 @@ from flask import render_template, flash, url_for, request, Response, redirect
 from .. import app
 from ..database import *
 from ..utils.auth import requires_auth
-from ..utils.list_routes import list_routes
+from ..utils.list_routes import list_simple_routes
 from ..utils.pydl15.parse import parse_dl15
 from ..utils.measurements import import_measurement
 from ..cron import do_fetch
@@ -20,7 +20,7 @@ from .forms import get_station_choices
 def admin():
     items = []
 
-    for r in list_routes():
+    for r in list_simple_routes():
         if "/admin/" not in r["url"]:
             continue
         item = {
