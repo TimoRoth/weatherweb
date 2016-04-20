@@ -1,23 +1,15 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from weatherweb import app
 from datetime import datetime, timedelta
+from flask.ext.script import Manager
+import threading
+
+from . import app
 from .database import *
 from .utils.pydl15.pydl15 import DL15
 from .utils.pydl15.parse import parse_dl15_gen
 from .utils.measurements import import_measurement
 
 
-sched = None
-fetch_job = None
-
-
-def init_cron():
-    global sched, fetch_job
-
-    sched = BackgroundScheduler()
-    sched.start()
-
-    fetch_job = sched.add_job(fetchdata, "interval", minutes=10, max_instances=1, coalesce=True)
+manager = Manager(app)
 
 
 def handle_dl15(station: Station, dl15: DL15):
@@ -37,7 +29,10 @@ def handle_dl15(station: Station, dl15: DL15):
     dl15.close()
 
 
+@manager.command
 def fetchdata():
+    """Fetch data from all registered stations"""
+
     with app.app_context():
         for station in Station.query.all():
             adr = str(station.address)
@@ -73,4 +68,9 @@ def fetchdata():
 
 
 def do_fetch():
-    fetch_job.modify(next_run_time=datetime.now())
+    t = threading.Thread(target=fetchdata)
+    t.start()
+
+
+def run_manager():
+    manager.run()

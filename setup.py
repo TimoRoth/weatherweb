@@ -19,9 +19,14 @@ setup(
         "Jinja2",
         "jsmin",
         "cssmin",
-        "APScheduler",
         "Werkzeug",
         "pyserial",
         "pytz",
-    ]
+    ],
+
+    entry_points={
+        'console_scripts': [
+            'weatherweb_manage = weatherweb.cron:run_manager'
+        ]
+    }
 )
