@@ -9,7 +9,6 @@ class Station(db.Model):
     location = db.Column(db.Text, nullable=False, default="")
     address = db.Column(db.String(128))
     timezone = db.Column(db.String(32), nullable=False)
-    is_dst = db.Column(db.Boolean, nullable=False, default=False)
 
     sensors = db.relationship("Sensor", backref=db.backref("station"))
     measurements = db.relationship("Measurement", backref=db.backref("station"))

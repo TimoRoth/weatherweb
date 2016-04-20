@@ -1,4 +1,6 @@
-from flask import Response, jsonify
+from flask import Response, jsonify, request
+from datetime import datetime, timedelta
+import tzlocal
 import pytz
 
 from weatherweb import app
@@ -25,26 +27,60 @@ def list_stations():
             "location": station.location,
             "address": station.address,
             "timezone": station.timezone,
-            "is_dst": station.is_dst,
             "sensors": sensors
         })
 
     return jsonify({"stations": res})
 
 
-@app.route("/json/sensor_data/<sensor_id>")
-def sensor_data(sensor_id):
+@app.route("/json/sensor_data/<int:sensor_id>")
+@app.route("/json/sensor_data/<int:sensor_id>/today", defaults={'start_mult': -1})
+@app.route("/json/sensor_data/<int:sensor_id>/last_hours/<int:start>", defaults={'start_mult': 1})
+@app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>", defaults={'start_mult': 24})
+@app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>", defaults={'start_mult': 168})
+@app.route("/json/sensor_data/<int:sensor_id>/last_hours/<int:start>/count/<int:count>", defaults={'start_mult': 1})
+@app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>/count/<int:count>", defaults={'start_mult': 24})
+@app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
+def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
     res = []
 
-    sensor = Sensor.query\
-        .options(db.subqueryload(Sensor.data).joinedload(MeasurementData.measurement))\
-        .get(sensor_id)
-    station = sensor.station
+    sensor = Sensor.query.get(sensor_id)
 
+    if sensor is None:
+        return jsonify({"error": "Sensor not found"})
+
+    station = sensor.station
     tz = pytz.timezone(station.timezone)
 
-    for data in sensor.data:
-        dt = tz.localize(data.measurement.datetime, is_dst=station.is_dst)
-        res.append([dt.timestamp() * 1000, data.data])
+    sdata = MeasurementData.query.join(MeasurementData.measurement).filter(MeasurementData.sensor_id == sensor_id)
+    sdata = sdata.options(db.contains_eager(MeasurementData.measurement))
+
+    dt = None
+
+    if start_mult < 0:
+        ltz = tzlocal.get_localzone()
+        dt = datetime.now(ltz)
+        dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+        dt = dt.astimezone(tz)
+        dt = dt.replace(tzinfo=None, microsecond=0)
+        sdata = sdata.filter(Measurement.datetime >= dt)
+    elif start_mult:
+        dt = datetime.now(pytz.utc) - timedelta(hours=start * start_mult)
+        dt = dt.astimezone(tz)
+        dt = dt.replace(tzinfo=None, microsecond=0)
+        sdata = sdata.filter(Measurement.datetime >= dt)
+
+    if count >= 0 and dt is not None:
+        dt = dt + timedelta(hours=start_mult * count)
+        sdata = sdata.filter(Measurement.datetime <= dt)
+
+    sdata = sdata.order_by(Measurement.datetime.asc()).all()
+
+    for data in sdata:
+        dt = tz.localize(data.measurement.datetime)
+        if request.args.get("human") is not None:
+            res.append([str(dt), data.data])
+        else:
+            res.append([int(dt.timestamp()) * 1000, data.data])
 
     return jsonify({"data": res})

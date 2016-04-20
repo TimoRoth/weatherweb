@@ -23,6 +23,7 @@ setup(
         "Werkzeug",
         "pyserial",
         "pytz",
+        "tzlocal",
     ],
 
     entry_points={
