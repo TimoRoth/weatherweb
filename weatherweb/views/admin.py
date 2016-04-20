@@ -44,7 +44,6 @@ def add_station():
             sta.location = form.location.data
             sta.address = form.address.data
             sta.timezone = form.timezone.data
-            sta.is_dst = form.is_dst.data
             db.session.add(sta)
             db.session.commit()
 

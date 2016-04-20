@@ -8,4 +8,3 @@ class AddStationForm(Form):
     location = StringField("Location")
     address = StringField("Address")
     timezone = StringField("Timezone", validators=[DataRequired()], default="CET")
-    is_dst = BooleanField("Is DST", default=False)
