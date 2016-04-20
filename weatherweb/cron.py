@@ -72,5 +72,12 @@ def do_fetch():
     t.start()
 
 
+@manager.command
+def init_db():
+    """Initialize database"""
+    app.config["SQLALCHEMY_ECHO"] = True
+    db.create_all()
+
+
 def run_manager():
     manager.run()
