@@ -6,5 +6,38 @@
     {% endassets %}
 {% endblock %}
 {% block body %}
-
+<div id="chart1" style="width: 1200px; height: 600px;">PRE</div>
+<script>
+var chart = new Highcharts.Chart({
+    chart: {
+        renderTo: "chart1",
+        alignTicks: false,
+        marginLeft: 50,
+        marginRight: 50
+    },
+    title: { text: "Wetter Uni Bremen, 48h" },
+    xAxis: {
+            type: 'datetime',
+            gridLineWidth: 1
+    },
+    plotOptions: {
+        pointInterval: 10,
+        line: { marker: { enabled: false } },
+        area: { marker: {enabled: false} }
+    }
+});
+chart.showLoading("Loading Data...");
+chart.yAxis[0].remove();
+chart.addAxis({title: {text: "Loading..."}, id: "sensor_id_4"});
+$.getJSON("{{ url_for("sensor_data", sensor_id=4, start=2, start_mult=24) }}", function(jdata) {
+    var axis = chart.get("sensor_id_4");
+    axis.setTitle(jdata.aux.sensor_name);
+    chart.addSeries({
+        name: jdata.aux.sensor_name,
+        yAxis: "sensor_id_4",
+        data: jdata.data
+    });
+    chart.hideLoading();
+});
+</script>
 {% endblock %}

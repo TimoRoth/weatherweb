@@ -1,4 +1,5 @@
 from flask import Response, jsonify, request
+from flask.ext.cachecontrol import cache_for
 from datetime import datetime, timedelta
 import tzlocal
 import pytz
@@ -8,6 +9,7 @@ from weatherweb.database import *
 
 
 @app.route("/json/list_stations")
+@cache_for(hours=12)
 def list_stations():
     res = []
 
@@ -41,6 +43,7 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/last_hours/<int:start>/count/<int:count>", defaults={'start_mult': 1})
 @app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>/count/<int:count>", defaults={'start_mult': 24})
 @app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
+@cache_for(minutes=5)
 def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
     res = []
 
@@ -83,4 +86,13 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
         else:
             res.append([int(dt.timestamp()) * 1000, data.data])
 
-    return jsonify({"data": res})
+    return jsonify({
+        "data": res,
+        "aux": {
+            "sensor_id": sensor.id,
+            "sensor_name": sensor.name,
+            "station_name": station.name,
+            "station_location": station.location,
+            "unit": sensor.unit,
+        }
+    })

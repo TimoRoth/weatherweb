@@ -17,6 +17,7 @@ setup(
         "Flask-Script",
         "Flask-Assets",
         "Flask-WTF",
+        "Flask-CacheControl",
         "Jinja2",
         "jsmin",
         "cssmin",

@@ -7,4 +7,4 @@ class AddStationForm(Form):
     name = StringField("Name", validators=[DataRequired()])
     location = StringField("Location")
     address = StringField("Address")
-    timezone = StringField("Timezone", validators=[DataRequired()], default="CET")
+    timezone = StringField("Timezone", validators=[DataRequired()], default="Etc/GMT-1")
