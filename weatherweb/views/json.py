@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import tzlocal
 import pytz
 
-from weatherweb import app
-from weatherweb.database import *
+from .. import app
+from ..database import *
 
 
 @app.route("/json/list_stations")
@@ -43,6 +43,7 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/last_hours/<int:start>/count/<int:count>", defaults={'start_mult': 1})
 @app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>/count/<int:count>", defaults={'start_mult': 24})
 @app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
+@app.route("/json/sensor_data/<int:sensor_id>/start/<int:start>/<int:start_mult>/count/<int:count>")
 @cache_for(minutes=5)
 def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
     res = []

@@ -10,5 +10,6 @@ class AddSensorForm(Form):
     name = StringField("Name", validators=[DataRequired()])
     comment = StringField("Comment")
     unit = StringField("Unit", validators=[DataRequired()], default="°C")
+    group = StringField("Group", validators=[DataRequired()], default="Default")
     position = IntegerField("Position", validators=[DataRequired()], default=1)
 

@@ -75,6 +75,7 @@ def add_sensor():
         sen.name = form.name.data
         sen.comment = form.comment.data
         sen.unit = form.unit.data
+        sen.group = form.group.data
         sen.position = form.position.data
         sen.station = sta
 

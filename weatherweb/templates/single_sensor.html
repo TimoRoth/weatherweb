@@ -1,0 +1,14 @@
+{%  extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    {% assets "charts_js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    <script type="text/javascript" src="{{ url_for("static", filename="single_sensor.js") }}"></script>
+{% endblock %}
+{% block title %}{{ sensor.station.location }} - {{ sensor.name }}{% endblock %}
+{% block body %}
+<div id="main_chart" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;"></div>
+<script>
+var chart = create_chart("main_chart", "{{ sensor.station.location }} -  {{ sensor.name }}");
+add_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+</script>
+{% endblock %}

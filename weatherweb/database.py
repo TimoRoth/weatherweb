@@ -18,8 +18,9 @@ class Sensor(db.Model):
     __tablename__ = "sensor"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(16), nullable=False)
+    name = db.Column(db.String(32), nullable=False)
     comment = db.Column(db.Text, nullable=False, default="")
+    group = db.Column(db.String(32), default="")
     unit = db.Column(db.String(16), nullable=False)
 
     # Sensor data position in DL15 output. 0-Based Column. Col 0 is decimal time.

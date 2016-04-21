@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title or "Unknown" }}{% endblock %}
+{% block body %}
+{{ super() }}
+<ul>
+{% for station in stations %}
+    <li><a href="{{ url_for("show_station", id=station.id) }}">{{ station.name }} - {{ station.location }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

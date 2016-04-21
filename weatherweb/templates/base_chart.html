@@ -8,6 +8,11 @@
 {% block body %}
 <div id="chart1" style="width: 1200px; height: 600px;">PRE</div>
 <script>
+Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
 var chart = new Highcharts.Chart({
     chart: {
         renderTo: "chart1",
@@ -33,7 +38,7 @@ $.getJSON("{{ url_for("sensor_data", sensor_id=4, start=2, start_mult=24) }}", f
     var axis = chart.get("sensor_id_4");
     axis.setTitle(jdata.aux.sensor_name);
     chart.addSeries({
-        name: jdata.aux.sensor_name,
+        name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
         yAxis: "sensor_id_4",
         data: jdata.data
     });

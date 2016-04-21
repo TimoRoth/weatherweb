@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ station.name }} - {{ station.location }}{% endblock %}
+{% block body %}
+{{ super() }}
+<h1>Daten von {{ station.name }}, {{ station.location }}</h1>
+<h2>Spezial</h2>
+<ul>
+    <li><a href="{{ url_for("temp_and_rain", station_id=station.id) }}">Temperatur / Niederschlag</a></li>
+</ul>
+<h2>Sensoren</h2>
+<ul>
+{% for sensor in station.sensors %}
+    <li><a href="{{ url_for("show_sensor", sensor_id=sensor.id) }}">{{ sensor.name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
