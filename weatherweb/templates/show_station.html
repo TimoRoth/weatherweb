@@ -5,12 +5,22 @@
 <h1>Daten von {{ station.name }}, {{ station.location }}</h1>
 <h2>Spezial</h2>
 <ul>
-    <li><a href="{{ url_for("temp_and_rain", station_id=station.id) }}">Temperatur / Niederschlag</a></li>
+    <li>
+        Temperatur / Niederschlag:&nbsp;
+        <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=24) }}">24h</a>&nbsp;
+        <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=48) }}">48h</a>&nbsp;
+        <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=72) }}">72h</a>&nbsp;
+    </li>
 </ul>
 <h2>Sensoren</h2>
 <ul>
 {% for sensor in station.sensors %}
-    <li><a href="{{ url_for("show_sensor", sensor_id=sensor.id) }}">{{ sensor.name }}</a></li>
+    <li>
+        {{ sensor.name }}:&nbsp;
+        <a href="{{ url_for("show_sensor", sensor_id=sensor.id, hours=24) }}">24h</a>&nbsp;
+        <a href="{{ url_for("show_sensor", sensor_id=sensor.id, hours=48) }}">48h</a>&nbsp;
+        <a href="{{ url_for("show_sensor", sensor_id=sensor.id, hours=72) }}">72h</a>&nbsp;
+    </li>
 {% endfor %}
 </ul>
 {% endblock %}
