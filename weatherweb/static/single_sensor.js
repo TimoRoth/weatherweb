@@ -4,13 +4,13 @@ Highcharts.setOptions({
     }
 });
 
-function create_chart(div_id, title) {
+function create_chart(div_id, group, title, url) {
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
             alignTicks: false,
-            marginLeft: 0,
-            marginRight: 0
+            marginLeft: 120,
+            marginRight: 120
         },
         title: {text: title},
         xAxis: {
@@ -30,17 +30,17 @@ function create_chart(div_id, title) {
     });
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
-    chart.addAxis({title: {text: title}, id: "main_axis"});
-    return chart;
-}
-
-function add_sensor(chart, url) {
+    if(group == "rain") {
+        chart.addAxis({title: {text: title, style: {"color": "#0018FF"}}, id: "main_axis", min: 0, max: 10});
+        chart.addSeries({yAxis: "main_axis", color: '#0018ff', type: 'area', id: "main_series", name: title});
+    } else {
+        chart.addAxis({title: {text: title}, id: "main_axis"});
+        chart.addSeries({yAxis: "main_axis", id: "main_series", name: title});
+    }
     $.getJSON(url, function(jdata) {
-        chart.addSeries({
-            name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
-            yAxis: "main_axis",
-            data: jdata.data
-        });
+        var series = chart.get("main_series");
+        series.setData(jdata.data);
         chart.hideLoading();
     });
+    return chart;
 }

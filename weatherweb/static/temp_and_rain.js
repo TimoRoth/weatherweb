@@ -9,8 +9,8 @@ function create_tnr_chart(div_id) {
         chart: {
             renderTo: div_id,
             alignTicks: false,
-            marginLeft: 0,
-            marginRight: 0
+            marginLeft: 120,
+            marginRight: 120
         },
         title: {text: "Temperatur und Regen"},
         xAxis: {
@@ -51,6 +51,7 @@ function add_rain_sensor(chart, url) {
         chart.addSeries({
             name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
             yAxis: "rain_axis",
+            type: 'area',
             data: jdata.data
         });
         chart.hideLoading();
