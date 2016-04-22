@@ -80,16 +80,27 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
         sdata = sdata.filter(Measurement.datetime <= dt)
 
     if latest:
-        sdata = [sdata.order_by(Measurement.datetime.desc()).first()]
+        sdata = sdata.order_by(Measurement.datetime.desc()).limit(1)
     else:
-        sdata = sdata.order_by(Measurement.datetime.asc()).all()
+        sdata = sdata.order_by(Measurement.datetime.asc())
+
+    sdata = sdata.all()
+
+    if sensor.group == "rain":
+        data_mult = 60.0 / station.mes_duration
+        unit = "mm/h"
+    else:
+        data_mult = 1.0
+        unit = sensor.unit
 
     for data in sdata:
+        if data is None:
+            continue
         dt = tz.localize(data.measurement.datetime)
         if request.args.get("human") is not None:
-            res.append([str(dt), data.data])
+            res.append([str(dt), data.data * data_mult])
         else:
-            res.append([int(dt.timestamp()) * 1000, data.data])
+            res.append([int(dt.timestamp()) * 1000, data.data * data_mult])
 
     return jsonify({
         "data": res,
@@ -99,6 +110,6 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
             "station_name": station.name,
             "station_location": station.location,
             "station_timezone": station.timezone,
-            "unit": sensor.unit,
+            "unit": unit,
         }
     })
