@@ -36,6 +36,7 @@ def list_stations():
 
 
 @app.route("/json/sensor_data/<int:sensor_id>")
+@app.route("/json/sensor_data/<int:sensor_id>/latest", defaults={'latest': True})
 @app.route("/json/sensor_data/<int:sensor_id>/today", defaults={'start_mult': -1})
 @app.route("/json/sensor_data/<int:sensor_id>/last_hours/<int:start>", defaults={'start_mult': 1})
 @app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>", defaults={'start_mult': 24})
@@ -45,7 +46,7 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
 @app.route("/json/sensor_data/<int:sensor_id>/start/<int:start>/<int:start_mult>/count/<int:count>")
 @cache_for(minutes=5)
-def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
+def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
     res = []
 
     sensor = Sensor.query.get(sensor_id)
@@ -78,7 +79,10 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
         dt = dt + timedelta(hours=start_mult * count)
         sdata = sdata.filter(Measurement.datetime <= dt)
 
-    sdata = sdata.order_by(Measurement.datetime.asc()).all()
+    if latest:
+        sdata = [sdata.order_by(Measurement.datetime.desc()).first()]
+    else:
+        sdata = sdata.order_by(Measurement.datetime.asc()).all()
 
     for data in sdata:
         dt = tz.localize(data.measurement.datetime)
@@ -94,6 +98,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1):
             "sensor_name": sensor.name,
             "station_name": station.name,
             "station_location": station.location,
+            "station_timezone": station.timezone,
             "unit": sensor.unit,
         }
     })
