@@ -30,8 +30,8 @@ function create_tnr_chart(div_id) {
     });
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
-    chart.addAxis({title: {text: "Temperatur"}, id: "temp_axis"});
-    chart.addAxis({title: {text: "Niederschlag", style: {"color": "#0018FF"}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 10.0});
+    chart.addAxis({title: {text: "Temperatur - °C"}, id: "temp_axis"});
+    chart.addAxis({title: {text: "Niederschlag - mm", style: {"color": "#0018FF"}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 10.0});
     return chart;
 }
 
