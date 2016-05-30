@@ -87,10 +87,8 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
     sdata = sdata.all()
 
     if sensor.group == "rain":
-        data_mult = 60.0 / station.mes_duration
-        unit = "mm/h"
+        unit = "mm/%smin" % station.mes_duration
     else:
-        data_mult = 1.0
         unit = sensor.unit
 
     for data in sdata:
@@ -98,9 +96,9 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
             continue
         dt = tz.localize(data.measurement.datetime)
         if request.args.get("human") is not None:
-            res.append([str(dt), data.data * data_mult])
+            res.append([str(dt), data.data])
         else:
-            res.append([int(dt.timestamp()) * 1000, data.data * data_mult])
+            res.append([int(dt.timestamp()) * 1000, data.data])
 
     return jsonify({
         "data": res,
