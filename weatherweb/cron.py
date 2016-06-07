@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask.ext.script import Manager
+from flask_script import Manager
 import threading
 
 from . import app

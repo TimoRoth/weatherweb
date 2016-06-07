@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask
-from flask.ext.cachecontrol import FlaskCacheControl
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_cachecontrol import FlaskCacheControl
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 

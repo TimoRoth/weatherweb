@@ -1,5 +1,5 @@
 from flask import Response, jsonify, request
-from flask.ext.cachecontrol import cache_for
+from flask_cachecontrol import cache_for
 from datetime import datetime, timedelta
 import tzlocal
 import pytz
