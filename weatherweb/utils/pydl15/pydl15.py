@@ -51,8 +51,10 @@ class DL15:
     def connect_telnet(self, address, port=23):
         self._log("Connecting to %s:%s ..." % (address, port))
         self.tn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.tn.settimeout(self.tn_timeout)
         self.tn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.tn.connect((address, port))
+        self.tn.settimeout(None)
         self._log("Connected!")
 
     def close(self):
