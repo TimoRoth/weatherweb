@@ -3,6 +3,7 @@ from flask_cachecontrol import cache_for
 from datetime import datetime, timedelta
 import tzlocal
 import pytz
+import math
 
 from .. import app
 from ..database import *
@@ -62,7 +63,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
 
     dt = None
 
-    if start_mult < 0:
+    if start_mult < 0:  # Today
         ltz = tzlocal.get_localzone()
         dt = datetime.now(ltz)
         dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -86,6 +87,11 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
 
     sdata = sdata.all()
 
+    if request.args.get("hourly_avg") is not None:
+        sdata = hourly_avg(sensor, tz, sdata)
+    else:
+        sdata = convert_data(tz, sdata)
+
     if sensor.group == "rain":
         unit = "mm/%smin" % station.mes_duration
     else:
@@ -94,11 +100,11 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
     for data in sdata:
         if data is None:
             continue
-        dt = tz.localize(data.measurement.datetime)
+        dt = data["datetime"]
         if request.args.get("human") is not None:
-            res.append([str(dt), data.data])
+            res.append([str(dt), data["data"]])
         else:
-            res.append([int(dt.timestamp()) * 1000, data.data])
+            res.append([int(dt.timestamp()) * 1000, data["data"]])
 
     return jsonify({
         "data": res,
@@ -111,3 +117,43 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
             "unit": unit,
         }
     })
+
+
+def calc_avg(sensor, data, dt):
+    if sensor.group == "wind":
+        rad = [math.radians(d) - math.pi for d in data]
+        sx = sum([math.cos(r) for r in rad])
+        sy = sum([math.sin(r) for r in rad])
+        res = math.degrees(math.atan2(sy, sx) + math.pi)
+    else:
+        res = float(sum(data))/len(data)
+
+    return {
+        "datetime": dt,
+        "data": res
+    }
+
+
+def hourly_avg(sensor, tz, sdata):
+    col = []
+    col_dt = None
+    for data in sdata:
+        dt = tz.localize(data.measurement.datetime)
+
+        if col_dt is None:
+            col_dt = dt
+
+        if dt.hour == col_dt.hour:
+            col.append(data.data)
+        else:
+            yield calc_avg(sensor, col, col_dt)
+            col_dt = dt
+            col = [data.data]
+
+    if col_dt is not None:
+        yield calc_avg(sensor, col, col_dt)
+
+
+def convert_data(tz, sdata):
+    for data in sdata:
+        yield {"datetime": tz.localize(data.measurement.datetime), "data": data.data}
