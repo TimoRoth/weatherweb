@@ -10,10 +10,18 @@
 <script>
 var chart = create_tnr_chart("main_chart");
 {% for sensor in temp_sensors %}
-add_temp_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+ {% if since >= 0 %}
+  add_temp_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, since=since, until=until) }}");
+ {% else %}
+  add_temp_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+ {% endif %}
 {% endfor %}
 {% for sensor in rain_sensors %}
-add_rain_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+ {% if since >= 0 %}
+  add_rain_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, since=since, until=until) }}");
+ {% else %}
+  add_rain_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+ {% endif %}
 {% endfor %}
 </script>
 {% endblock %}

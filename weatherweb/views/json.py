@@ -46,8 +46,10 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/last_days/<int:start>/count/<int:count>", defaults={'start_mult': 24})
 @app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
 @app.route("/json/sensor_data/<int:sensor_id>/start/<int:start>/<int:start_mult>/count/<int:count>")
+@app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>")
+@app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>/until/<int:until>")
 @cache_for(minutes=5)
-def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
+def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
     res = []
 
     sensor = Sensor.query.get(sensor_id)
@@ -63,7 +65,12 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
 
     dt = None
 
-    if start_mult < 0:  # Today
+    if since >= 0:
+        dt = datetime.fromtimestamp(since)
+        dt = dt.astimezone(tz)
+        dt = dt.replace(tzinfo=None, microsecond=0)
+        sdata = sdata.filter(Measurement.datetime >= dt)
+    elif start_mult < 0:  # Today
         ltz = tzlocal.get_localzone()
         dt = datetime.now(ltz)
         dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -76,7 +83,12 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, latest=False):
         dt = dt.replace(tzinfo=None, microsecond=0)
         sdata = sdata.filter(Measurement.datetime >= dt)
 
-    if count >= 0 and dt is not None:
+    if until >= 0:
+        dt = datetime.fromtimestamp(until)
+        dt = dt.astimezone(tz)
+        dt = dt.replace(tzinfo=None, microsecond=0)
+        sdata = sdata.filter(Measurement.datetime <= dt)
+    elif count >= 0 and dt is not None:
         dt = dt + timedelta(hours=start_mult * count)
         sdata = sdata.filter(Measurement.datetime <= dt)
 

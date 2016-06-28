@@ -12,6 +12,11 @@ create_chart(
     "main_chart",
     "{{ sensor.group }}",
     "{{ sensor.name }} - {{ sensor.unit }}",
-    "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+{% if since >= 0 %}
+    "{{ url_for("sensor_data", sensor_id=sensor.id, since=since, until=until) }}"
+{% else %}
+    "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}"
+{% endif %}
+);
 </script>
 {% endblock %}
