@@ -47,10 +47,12 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
 @app.route("/json/sensor_data/<int:sensor_id>/start/<int:start>/<int:start_mult>/count/<int:count>")
 @app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>")
-@app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>/until/<int:until>")
+@app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>/until/<until>")
 @cache_for(minutes=5)
 def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
     res = []
+    since = int(since)
+    until = int(until)
 
     sensor = Sensor.query.get(sensor_id)
 
@@ -66,7 +68,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
     dt = None
 
     if since >= 0:
-        dt = datetime.fromtimestamp(since)
+        dt = datetime.fromtimestamp(since, tz=pytz.utc)
         dt = dt.astimezone(tz)
         dt = dt.replace(tzinfo=None, microsecond=0)
         sdata = sdata.filter(Measurement.datetime >= dt)
@@ -84,7 +86,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
         sdata = sdata.filter(Measurement.datetime >= dt)
 
     if until >= 0:
-        dt = datetime.fromtimestamp(until)
+        dt = datetime.fromtimestamp(until, tz=pytz.utc)
         dt = dt.astimezone(tz)
         dt = dt.replace(tzinfo=None, microsecond=0)
         sdata = sdata.filter(Measurement.datetime <= dt)
