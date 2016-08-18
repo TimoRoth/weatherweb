@@ -10,8 +10,6 @@
 <script>
 create_chart(
     "main_chart",
-    "{{ sensor.group }}",
-    "{{ sensor.name }} - {{ sensor.unit }}",
 {% if since >= 0 %}
     "{{ url_for("sensor_data", sensor_id=sensor.id, since=since, until=until) }}"
 {% else %}

@@ -4,7 +4,7 @@ Highcharts.setOptions({
     }
 });
 
-function create_chart(div_id, group, title, url) {
+function create_chart(div_id, url) {
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
@@ -12,7 +12,7 @@ function create_chart(div_id, group, title, url) {
             marginLeft: 120,
             marginRight: 120
         },
-        title: {text: title},
+        title: {text: "..."},
         xAxis: {
             type: 'datetime',
             gridLineWidth: 1
@@ -30,15 +30,19 @@ function create_chart(div_id, group, title, url) {
     });
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
-    if(group == "rain") {
-        chart.addAxis({title: {text: "Niederschlag - mm/10min", style: {"color": "#0018FF"}}, id: "main_axis", min: 0, max: 10});
-        chart.addSeries({yAxis: "main_axis", color: '#0018ff', type: 'area', id: "main_series", name: "Niederschlag - mm/10min"});
-    } else {
-        chart.addAxis({title: {text: title}, id: "main_axis"});
-        chart.addSeries({yAxis: "main_axis", id: "main_series", name: title});
-    }
+    chart.addAxis({title: {text: "..."}, id: "main_axis"});
+    chart.addSeries({yAxis: "main_axis", id: "main_series", name: "..."});
     $.getJSON(url, function(jdata) {
+        var ax = chart.get("main_axis");
         var series = chart.get("main_series");
+        var title = jdata.aux.sensor_name + " - " + jdata.aux.unit;
+        chart.setTitle({text: title}, {});
+        ax.setTitle(title);
+        if(jdata.aux.sensor_group == "rain") {
+            ax.update({style: {"color": "#0018FF"}, min: 0, max: 10});
+            series.update({color: '#0018ff', type: 'area'});
+        }
+        series.update({name: title});
         series.setData(jdata.data);
         chart.hideLoading();
     });

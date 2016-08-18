@@ -125,6 +125,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
         "aux": {
             "sensor_id": sensor.id,
             "sensor_name": sensor.name,
+            "sensor_group": sensor.group,
             "station_name": station.name,
             "station_location": station.location,
             "station_timezone": station.timezone,

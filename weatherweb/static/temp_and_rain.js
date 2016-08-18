@@ -52,6 +52,7 @@ function add_rain_sensor(chart, url) {
             name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
             yAxis: "rain_axis",
             type: 'area',
+            color: '#0018ff',
             data: jdata.data
         });
         chart.hideLoading();
