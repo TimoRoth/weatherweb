@@ -37,7 +37,7 @@ function create_chart(div_id, url) {
         var series = chart.get("main_series");
         var title = jdata.aux.sensor_name + " - " + jdata.aux.unit;
         chart.setTitle({text: title}, {});
-        ax.setTitle(title);
+        ax.setTitle({text: title});
         if(jdata.aux.sensor_group == "rain") {
             ax.update({style: {"color": "#0018FF"}, min: 0, max: 10});
             series.update({color: '#0018ff', type: 'area'});

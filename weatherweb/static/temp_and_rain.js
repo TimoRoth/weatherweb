@@ -31,7 +31,7 @@ function create_tnr_chart(div_id) {
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
     chart.addAxis({title: {text: "Temperatur - °C"}, id: "temp_axis"});
-    chart.addAxis({title: {text: "Niederschlag - mm/10min", style: {"color": "#0018FF"}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 10.0});
+    chart.addAxis({title: {text: "Niederschlag", style: {"color": "#0018FF"}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 10.0});
     return chart;
 }
 
@@ -48,6 +48,8 @@ function add_temp_sensor(chart, url) {
 
 function add_rain_sensor(chart, url) {
     $.getJSON(url, function(jdata) {
+        var ax = chart.get("rain_axis");
+        ax.setTitle({title: {text: "Niederschlag - " + jdata.aux.unit, style: {"color": "#0018FF"}}});
         chart.addSeries({
             name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
             yAxis: "rain_axis",
