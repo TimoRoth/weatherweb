@@ -31,8 +31,8 @@ function create_chart(div_id, group, title, url) {
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
     if(group == "rain") {
-        chart.addAxis({title: {text: "Niederschlag - mm/h", style: {"color": "#0018FF"}}, id: "main_axis", min: 0, max: 10});
-        chart.addSeries({yAxis: "main_axis", color: '#0018ff', type: 'area', id: "main_series", name: "Niederschlag - mm/h"});
+        chart.addAxis({title: {text: "Niederschlag - mm/10min", style: {"color": "#0018FF"}}, id: "main_axis", min: 0, max: 10});
+        chart.addSeries({yAxis: "main_axis", color: '#0018ff', type: 'area', id: "main_series", name: "Niederschlag - mm/10min"});
     } else {
         chart.addAxis({title: {text: title}, id: "main_axis"});
         chart.addSeries({yAxis: "main_axis", id: "main_series", name: title});
