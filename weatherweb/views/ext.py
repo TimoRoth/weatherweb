@@ -1,5 +1,4 @@
 from flask import request
-from datetime import timedelta
 
 from .. import app
 from ..database import *
@@ -12,7 +11,7 @@ def last_data(station_id):
     mes = Measurement.query.filter(Measurement.station_id == station_id).order_by(Measurement.datetime.desc()).first()
     if mes is None:
         return "Station not found", 404
-    return (mes.datetime + timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S")
+    return mes.datetime.strftime("%Y-%m-%d %H:%M:%S")
 
 
 @app.route("/ext/feed/<int:station_id>", methods=["POST", "GET"])
