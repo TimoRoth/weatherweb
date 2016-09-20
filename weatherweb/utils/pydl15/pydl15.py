@@ -87,7 +87,7 @@ class DL15:
         self._log("POWER ON")
         if self.port is not None:
             self.port.write(b"\x04\x00")
-            time.sleep(1)
+            self.readlines()
         elif self.tn is not None:
             self.tn.sendall(b"\x04\x00")
             self._log("RESETTING CONNECTION...")
