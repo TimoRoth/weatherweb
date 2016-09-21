@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from .weatherweb.utils.pydl15 import DL15
+from pydl15 import DL15
 from datetime import datetime, timedelta
 import sys
 import requests
@@ -31,6 +31,9 @@ dl15.close()
 
 data = [x.strip() for x in data if x.strip()]
 data = "\n".join(data)
+
+print(data)
+sys.exit(0)
 
 res = requests.post("%s/ext/feed/%s%s" % (APP_URL, STATION_ID, AUTH if AUTH is not None else ""), data={'data': data})
 print(res.text)
