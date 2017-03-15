@@ -5,8 +5,8 @@ import sys
 import requests
 
 STATION_ID = "1"
-APP_URL = "http://192.168.40.30:5000/"
-AUTH = "bla"
+APP_URL = "https://klima.uni-bremen.de/"
+AUTH = None
 
 if AUTH is not None:
     AUTH = "/" + AUTH
