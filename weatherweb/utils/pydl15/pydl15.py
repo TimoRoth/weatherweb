@@ -13,7 +13,7 @@ class DL15:
         self.port = None
         self.tn = None
         self.tn_timeout = 30
-        self.ser_timeout = 2
+        self.ser_timeout = 30
         self.verbose = verbose
 
     def _log(self, c):
@@ -87,7 +87,9 @@ class DL15:
         self._log("POWER ON")
         if self.port is not None:
             self.port.write(b"\x04\x00")
+            self.port.timeout = 2
             self.readlines()
+            self.port.timeout = self.ser_timeout
         elif self.tn is not None:
             self.tn.sendall(b"\x04\x00")
             self._log("RESETTING CONNECTION...")

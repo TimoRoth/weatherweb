@@ -21,7 +21,7 @@ if res.status_code != 200:
 since_date = datetime.strptime(res.text, "%Y-%m-%d %H:%M:%S") + timedelta(minutes=1)
 print("Uploading data since %s" % since_date)
 
-dl15 = DL15()
+dl15 = DL15(True)
 dl15.connect_serial("/dev/ttyFTDI")
 
 dl15.power_on()
@@ -33,10 +33,11 @@ data = [x.strip() for x in data if x.strip()]
 data = "\n".join(data)
 
 print(data)
-sys.exit(0)
 
 res = requests.post("%s/ext/feed/%s%s" % (APP_URL, STATION_ID, AUTH if AUTH is not None else ""), data={'data': data})
 print(res.text)
 
 if res.status_code != 200:
     sys.exit(2)
+
+sys.exit(0)
