@@ -152,17 +152,16 @@ class DL15:
             print("Waiting for full minute...")
             dt = datetime.now()
             dif = 60 - dt.second
-            if dif == 60:
-                pass
-            elif dif > 25:
-                self.power_off()
-                time.sleep(dif - 2)
-                self.power_on()
-            while True:
-                dt = datetime.now()
-                if dt.second == 0:
-                    break
-                time.sleep(0.25)
+            if dt.second != 0:
+                if dif > 25:
+                    self.power_off()
+                    time.sleep(dif - 10)
+                    self.power_on()
+                while True:
+                    dt = datetime.now()
+                    if dt.second == 0:
+                        break
+                    time.sleep(0.1)
         self.send_command("ZM%s" % dt.minute)
         self.readlines(3)
         self.send_command("ZH%s" % dt.hour)
