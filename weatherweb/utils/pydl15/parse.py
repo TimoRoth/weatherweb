@@ -1,13 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def fixup_datetime(fields):
     # Fixup midnight being 24 instead of 00
+    delta = timedelta(days=0)
     if fields[-1][:3] == "24:":
         fields[-1] = "00" + fields[-1][2:]
+        delta = timedelta(days=1)
 
     dt = " ".join(fields[-2:])
-    dt = datetime.strptime(dt, "%d.%m.%y %H:%M")
+    dt = datetime.strptime(dt, "%d.%m.%y %H:%M") + delta
     fields = fields[0:-2]
     fields[0] = dt
     return fields
