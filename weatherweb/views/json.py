@@ -100,16 +100,16 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
         sdata = sdata.order_by(Measurement.datetime.asc())
 
     sdata = sdata.all()
+    unit = sensor.unit
 
     if request.args.get("hourly_avg") is not None:
         sdata = hourly_avg(sensor, tz, sdata)
+        if sensor.group == "rain":
+            unit = "mm/h"
     else:
         sdata = convert_data(tz, sdata)
-
-    if sensor.group == "rain":
-        unit = "mm/%smin" % station.mes_duration
-    else:
-        unit = sensor.unit
+        if sensor.group == "rain":
+            unit = "mm/%smin" % station.mes_duration
 
     for data in sdata:
         if data is None:
@@ -140,6 +140,8 @@ def calc_avg(sensor, data, dt):
         sx = sum([math.cos(r) for r in rad])
         sy = sum([math.sin(r) for r in rad])
         res = math.degrees(math.atan2(sy, sx) + math.pi)
+    elif sensor.group == "rain":
+        res = sum(data)
     else:
         res = float(sum(data))/len(data)
 
