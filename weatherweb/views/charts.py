@@ -9,6 +9,22 @@ def test_chart():
     return render_template("base_chart.html")
 
 
+@app.route("/charts/summary")
+@app.route("/charts/summary/last_hours/<int:hours>")
+@app.route("/charts/summary/since/<int:since>")
+@app.route("/charts/summary/since/<int:since>/until/<int:until>")
+def summary(hours=48, since=-1, until=-1):
+    wind_speed_sensor = Sensor.query.get(2)
+    wind_dir_sensor = Sensor.query.get(3)
+    temp_sensor = Sensor.query.get(4)
+    humid_sensor = Sensor.query.get(5)
+    rain_sensor = Sensor.query.get(10)
+
+    return render_template("summary_chart.html", hours=hours, since=since, until=until,
+                           wind_speed_sensor=wind_speed_sensor, wind_dir_sensor=wind_dir_sensor,
+                           temp_sensor=temp_sensor, humid_sensor=humid_sensor, rain_sensor=rain_sensor)
+
+
 @app.route("/charts/temp_and_rain/<int:station_id>")
 @app.route("/charts/temp_and_rain/<int:station_id>/last_hours/<int:hours>")
 @app.route("/charts/temp_and_rain/<int:station_id>/since/<int:since>")
@@ -22,7 +38,9 @@ def temp_and_rain(station_id, hours=48, since=-1, until=-1):
     temp_sensors = Sensor.query.filter(Sensor.station == station).filter(Sensor.group == "temp").all()
     rain_sensors = Sensor.query.filter(Sensor.station == station).filter(Sensor.group == "rain").all()
 
-    return render_template("temp_and_rain_chart.html", hours=hours, station=station, temp_sensors=temp_sensors, rain_sensors=rain_sensors, since=since, until=until)
+    return render_template("temp_and_rain_chart.html", hours=hours, station=station,
+                           temp_sensors=temp_sensors, rain_sensors=rain_sensors,
+                           since=since, until=until)
 
 
 @app.route("/charts/show_sensor/<int:sensor_id>")

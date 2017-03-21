@@ -1,5 +1,6 @@
 from flask import Response, jsonify, request
 from flask_cachecontrol import cache_for
+from flask_cors import cross_origin
 from datetime import datetime, timedelta
 import tzlocal
 import pytz
@@ -11,6 +12,7 @@ from ..database import *
 
 @app.route("/json/list_stations")
 @cache_for(hours=12)
+@cross_origin()
 def list_stations():
     res = []
 
@@ -49,7 +51,34 @@ def list_stations():
 @app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>")
 @app.route("/json/sensor_data/<int:sensor_id>/since/<int:since>/until/<until>")
 @cache_for(minutes=5)
+@cross_origin()
 def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
+    return jsonify(get_sensor_data(sensor_id, start, start_mult, count, since, until, latest))
+
+
+@app.route("/json/multi_sensor_data/<string:sensor_ids>")
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/latest", defaults={'latest': True})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/today", defaults={'start_mult': -1})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_hours/<int:start>", defaults={'start_mult': 1})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_days/<int:start>", defaults={'start_mult': 24})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_weeks/<int:start>", defaults={'start_mult': 168})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_hours/<int:start>/count/<int:count>", defaults={'start_mult': 1})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_days/<int:start>/count/<int:count>", defaults={'start_mult': 24})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/start/<int:start>/<int:start_mult>/count/<int:count>")
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/since/<int:since>")
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/since/<int:since>/until/<until>")
+@cache_for(minutes=5)
+@cross_origin()
+def multi_sensor_data(sensor_ids, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
+    sensor_ids = [int(x) for x in sensor_ids.split(",")]
+    res = dict()
+    for sensor_id in sensor_ids:
+        res[sensor_id] = get_sensor_data(sensor_id, start, start_mult, count, since, until, latest)
+    return jsonify(res)
+
+
+def get_sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
     res = []
     since = int(since)
     until = int(until)
@@ -57,7 +86,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
     sensor = Sensor.query.get(sensor_id)
 
     if sensor is None:
-        return jsonify({"error": "Sensor not found"})
+        return {"error": "Sensor not found"}
 
     station = sensor.station
     tz = pytz.timezone(station.timezone)
@@ -120,7 +149,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
         else:
             res.append([int(dt.timestamp()) * 1000, data["data"]])
 
-    return jsonify({
+    return {
         "data": res,
         "aux": {
             "sensor_id": sensor.id,
@@ -131,7 +160,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
             "station_timezone": station.timezone,
             "unit": unit,
         }
-    })
+    }
 
 
 def calc_avg(sensor, data, dt):

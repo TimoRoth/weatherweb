@@ -2,7 +2,13 @@
 {% block title %}{{ title or "Unknown" }}{% endblock %}
 {% block body %}
 {{ super() }}
+<h3>Stationen</h3>
 <ul>
+    <li><span style="font-size: 18px; font-weight: bold;">&Uuml;bersicht:&nbsp;</span>
+    <a href="{{ url_for("summary", hours=24) }}">24h</a>&nbsp;
+    <a href="{{ url_for("summary", hours=48) }}">48h</a>&nbsp;
+    <a href="{{ url_for("summary", hours=72) }}">72h</a>&nbsp;
+    </li>
 {% for station in stations %}
     <li><a href="{{ url_for("show_station", id=station.id) }}">{{ station.name }} - {{ station.location }}</a></li>
 {% endfor %}

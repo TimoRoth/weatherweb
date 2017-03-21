@@ -1,0 +1,14 @@
+{%  extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    {% assets "charts_js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    <script type="text/javascript" src="{{ url_for("static", filename="summary.js") }}"></script>
+{% endblock %}
+{% block title %}Übersicht{% endblock %}
+{% block body %}
+<div id="main_chart" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;"></div>
+{{ wind_speed_sensor.id }}
+<script>
+create_summary_chart("main_chart");
+</script>
+{% endblock %}

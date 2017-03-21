@@ -18,6 +18,7 @@ setup(
         "Flask-Assets",
         "Flask-WTF",
         "Flask-CacheControl",
+        "Flask-Cors",
         "Jinja2",
         "jsmin",
         "cssmin",
