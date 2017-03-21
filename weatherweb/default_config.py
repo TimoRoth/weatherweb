@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = 'sqlite:///default.sqlite'
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://timo:IFzOUgjWcLYcFSK26pPW@klima.uni-bremen.de/weatherweb'
 SQLALCHEMY_ECHO = True
 
 ADMIN_USER = "admin"

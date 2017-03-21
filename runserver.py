@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 
 from weatherweb import app
-app.run(debug=True)
+app.run(host='127.0.0.1', debug=True)
