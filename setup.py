@@ -22,6 +22,7 @@ setup(
         "Jinja2",
         "jsmin",
         "cssmin",
+        "htmlmin",
         "Werkzeug",
         "pyserial",
         "pytz",
