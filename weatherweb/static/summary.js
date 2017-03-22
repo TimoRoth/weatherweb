@@ -4,7 +4,7 @@ Highcharts.setOptions({
     }
 });
 
-function create_summary_chart(div_id) {
+function create_summary_chart(div_id, data_url, wind_speed_id, wind_dir_id, temp_id, humid_id, rain_id) {
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
@@ -28,35 +28,40 @@ function create_summary_chart(div_id) {
             valueDecimals: 1
         }
     });
-    chart.showLoading("Loading Data...");
+
+    var temp_color = "#FF5555";
+    var temp_name = "Temperatur - °C";
+    var rain_color = "#0018FF";
+    var rain_name = "Niederschlag - mm/10min";
+    var wind_color = "#FFD700";
+    var wind_name = "Windgeschwindigkeit - m/s";
+    var humi_color = "#00AAAA";
+    var humi_name = "Luftfeuchtigkeit - %";
+
+    chart.showLoading("Lade Daten...");
     chart.yAxis[0].remove();
-    chart.addAxis({title: {text: "Temperatur - °C"}, id: "temp_axis"});
-    chart.addAxis({title: {text: "Niederschlag", style: {"color": "#0018FF"}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 7.5});
+    chart.addAxis({title: {text: temp_name, style: {"color": temp_color}}, id: "temp_axis"}, false);
+    chart.addAxis({title: {text: rain_name, style: {"color": rain_color}}, id: "rain_axis", gridLineWidth: 0, opposite: true, min: 0, max: 7.5}, false);
+    chart.addAxis({title: {text: wind_name, style: {"color": wind_color}}, id: "wind_speed_axis", gridLineWidth: 0, min: 0}, false);
+    chart.addAxis({title: {text: humi_name, style: {"color": humi_color}}, id: "humid_axis", gridLineWidth: 0, opposite: true}, false);
+    var temp_series = chart.addSeries({name: temp_name, yAxis: "temp_axis", color: temp_color}, false);
+    var rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area"}, false);
+    var wind_series = chart.addSeries({name: wind_name, yAxis: "wind_speed_axis", color: wind_color}, false);
+    var humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color}, false);
+
+    var update_function = function() {
+        chart.redraw(true);
+        $.getJSON(data_url, function(data) {
+            temp_series.setData(data[temp_id].data, false);
+            rain_series.setData(data[rain_id].data, false);
+            wind_series.setData(data[wind_speed_id].data, false);
+            humi_series.setData(data[humid_id].data, false);
+            chart.hideLoading();
+            chart.redraw(true);
+        });
+    };
+
+    update_function();
+
     return chart;
-}
-
-function add_temp_sensor(chart, url) {
-    $.getJSON(url, function(jdata) {
-        chart.addSeries({
-            name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
-            yAxis: "temp_axis",
-            data: jdata.data
-        });
-        chart.hideLoading();
-    });
-}
-
-function add_rain_sensor(chart, url) {
-    $.getJSON(url, function(jdata) {
-        var ax = chart.get("rain_axis");
-        ax.setTitle({title: {text: "Niederschlag - " + jdata.aux.unit, style: {"color": "#0018FF"}}});
-        chart.addSeries({
-            name: jdata.aux.sensor_name + " - " + jdata.aux.unit,
-            yAxis: "rain_axis",
-            type: 'area',
-            color: '#0018ff',
-            data: jdata.data
-        });
-        chart.hideLoading();
-    });
 }

@@ -13,14 +13,24 @@ def test_chart():
 @app.route("/charts/summary/last_hours/<int:hours>")
 @app.route("/charts/summary/since/<int:since>")
 @app.route("/charts/summary/since/<int:since>/until/<int:until>")
-def summary(hours=48, since=-1, until=-1):
+def summary(hours=24, since=-1, until=-1):
     wind_speed_sensor = Sensor.query.get(2)
     wind_dir_sensor = Sensor.query.get(3)
     temp_sensor = Sensor.query.get(4)
     humid_sensor = Sensor.query.get(5)
     rain_sensor = Sensor.query.get(10)
 
-    return render_template("summary_chart.html", hours=hours, since=since, until=until,
+    if since >= 0:
+        kwargs = {"since": since, "until": until}
+    else:
+        kwargs = {"start": hours, "start_mult": 1}
+
+    data_url = url_for("multi_sensor_data",
+                       sensor_ids=",".join(map(str, [wind_speed_sensor.id, wind_dir_sensor.id,
+                                                     temp_sensor.id, humid_sensor.id, rain_sensor.id])),
+                       **kwargs)
+
+    return render_template("summary_chart.html", hours=hours, since=since, until=until, data_url=data_url,
                            wind_speed_sensor=wind_speed_sensor, wind_dir_sensor=wind_dir_sensor,
                            temp_sensor=temp_sensor, humid_sensor=humid_sensor, rain_sensor=rain_sensor)
 

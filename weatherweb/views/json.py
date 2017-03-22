@@ -67,7 +67,7 @@ def sensor_data(sensor_id, start=0, start_mult=0, count=-1, since=-1, until=-1, 
 @app.route("/json/multi_sensor_data/<string:sensor_ids>/last_weeks/<int:start>/count/<int:count>", defaults={'start_mult': 168})
 @app.route("/json/multi_sensor_data/<string:sensor_ids>/start/<int:start>/<int:start_mult>/count/<int:count>")
 @app.route("/json/multi_sensor_data/<string:sensor_ids>/since/<int:since>")
-@app.route("/json/multi_sensor_data/<string:sensor_ids>/since/<int:since>/until/<until>")
+@app.route("/json/multi_sensor_data/<string:sensor_ids>/since/<int:since>/until/<int:until>")
 @cache_for(minutes=5)
 @cross_origin()
 def multi_sensor_data(sensor_ids, start=0, start_mult=0, count=-1, since=-1, until=-1, latest=False):
