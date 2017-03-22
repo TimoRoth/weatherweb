@@ -67,6 +67,7 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     };
 
     update_function();
+    window.setInterval(update_function, 10 * 60 * 1000);
 
     return chart;
 }
