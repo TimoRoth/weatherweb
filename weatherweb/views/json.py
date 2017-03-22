@@ -184,7 +184,7 @@ def hourly_avg(sensor, tz, sdata):
     col = []
     col_dt = None
     for data in sdata:
-        dt = tz.localize(data.measurement.datetime)
+        dt = tz.localize(data.measurement.datetime) + timedelta(hours=1)
 
         if col_dt is None:
             col_dt = dt
