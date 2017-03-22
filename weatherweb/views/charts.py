@@ -21,8 +21,13 @@ def summary(hours=24, since=-1, until=-1):
     rain_sensor = Sensor.query.get(10)
     bila_sensor = Sensor.query.get(11)
 
+    dura_unit = "10min"
+
     if since >= 0:
         kwargs = {"since": since, "until": until}
+    elif hours > 5 * 24:
+        kwargs = {"start": hours, "start_mult": 1, "hourly_avg": True}
+        dura_unit = "h"
     else:
         kwargs = {"start": hours, "start_mult": 1}
 
@@ -31,7 +36,7 @@ def summary(hours=24, since=-1, until=-1):
                                                      humid_sensor.id, rain_sensor.id, bila_sensor.id])),
                        **kwargs)
 
-    return render_template("summary_chart.html", hours=hours, since=since, until=until, data_url=data_url,
+    return render_template("summary_chart.html", hours=hours, since=since, until=until, data_url=data_url, dura_unit=dura_unit,
                            wind_speed_sensor=wind_speed_sensor, wind_dir_sensor=wind_dir_sensor, bila_sensor=bila_sensor,
                            temp_sensor=temp_sensor, humid_sensor=humid_sensor, rain_sensor=rain_sensor)
 
