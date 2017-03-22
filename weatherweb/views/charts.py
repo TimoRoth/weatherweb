@@ -31,6 +31,9 @@ def summary(hours=24, since=-1, until=-1):
     else:
         kwargs = {"start": hours, "start_mult": 1}
 
+    if request.args.get("hourly_avg") is not None:
+        kwargs["hourly_avg"] = True
+
     data_url = url_for("multi_sensor_data",
                        sensor_ids=",".join(map(str, [wind_speed_sensor.id, wind_dir_sensor.id, temp_sensor.id,
                                                      humid_sensor.id, rain_sensor.id, bila_sensor.id])),
