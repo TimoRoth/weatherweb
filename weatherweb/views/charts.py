@@ -19,7 +19,7 @@ def summary(hours=24, since=-1, until=-1):
     temp_sensor = Sensor.query.get(4)
     humid_sensor = Sensor.query.get(5)
     rain_sensor = Sensor.query.get(10)
-    bila_sensor = Sensor.query.get(11)
+    bila_sensor = Sensor.query.get(8)
 
     dura_unit = "10min"
 
