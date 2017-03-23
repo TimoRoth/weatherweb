@@ -87,7 +87,7 @@ class DL15:
         self._log("POWER ON")
         if self.port is not None:
             self.port.write(b"\x04\x00")
-            self.port.timeout = 15
+            self.port.timeout = 5
             self.readlines()
             self.port.timeout = self.ser_timeout
         elif self.tn is not None:
