@@ -1,5 +1,5 @@
 import serial.tools.list_ports
-from datetime import datetime
+from datetime import datetime, timedelta
 import socket
 import select
 import serial
@@ -147,10 +147,10 @@ class DL15:
     def power_off(self):
         self.send_command("PD")
 
-    def set_clock(self, dt=None):
+    def set_clock(self, utc_offset=timedelta(hours=1), dt=None):
         if dt is None:
             print("Waiting for full minute...")
-            dt = datetime.now()
+            dt = datetime.utcnow()
             dif = 60 - dt.second
             if dt.second != 0:
                 if dif > 25:
@@ -158,10 +158,11 @@ class DL15:
                     time.sleep(dif - 10)
                     self.power_on()
                 while True:
-                    dt = datetime.now()
+                    dt = datetime.utcnow()
                     if dt.second == 0:
                         break
                     time.sleep(0.1)
+            dt = dt + utc_offset
         self.send_command("ZM%s" % dt.minute)
         self.readlines(3)
         self.send_command("ZH%s" % dt.hour)
