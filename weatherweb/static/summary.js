@@ -9,8 +9,8 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
         chart: {
             renderTo: div_id,
             alignTicks: false,
-            marginLeft: 130,
-            marginRight: 200
+            marginLeft: 135,
+            marginRight: 195
         },
         title: {text: "Übersicht"},
         xAxis: {
