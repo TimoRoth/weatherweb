@@ -8,9 +8,7 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
-            alignTicks: false,
-            marginLeft: 135,
-            marginRight: 195
+            alignTicks: false
         },
         title: {text: "Übersicht"},
         xAxis: {
