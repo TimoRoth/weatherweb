@@ -48,8 +48,8 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area"}, false, false);
     var temp_series = chart.addSeries({name: temp_name, yAxis: "temp_axis", color: temp_color}, false, false);
     var wind_series = chart.addSeries({name: wind_name, yAxis: "wind_speed_axis", color: wind_color}, false, false);
-    var humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color}, false, false);
-    var bila_series = chart.addSeries({name: bila_name, yAxis: "bila_axis", color: bila_color}, false, false);
+    var humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color, visible: false}, false, false);
+    var bila_series = chart.addSeries({name: bila_name, yAxis: "bila_axis", color: bila_color, visible: false}, false, false);
 
     var update_function = function() {
         chart.redraw(true);
