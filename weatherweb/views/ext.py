@@ -50,5 +50,5 @@ def feed_data(station_id, auth_string=None):
 def feed_cr(station_id, auth_string, file_name):
     with open("/tmp/put_data.txt", "wb") as f:
         f.write(b"Hallo das ist ein TEST!!!\n")
-        f.write(str(request.json).encode('utf-8'))
+        f.write(request.get_data())
     return "OK"
