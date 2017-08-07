@@ -49,5 +49,5 @@ def feed_data(station_id, auth_string=None):
 @app.route("/ext/feed_cr/<int:station_id>/<auth_string>/<file_name>", methods=["PUT", "POST"])
 def feed_cr(station_id, auth_string, file_name):
     with open("/tmp/put_data.txt", "wb") as f:
-        f.write(str(request.json))
+        f.write(str(request.json).encode('utf-8'))
     return "OK"
