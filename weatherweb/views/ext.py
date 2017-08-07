@@ -44,3 +44,10 @@ def feed_data(station_id, auth_string=None):
     cnt = import_measurement(station, data)
 
     return "Imported %d lines of data" % cnt
+
+
+@app.route("/ext/feed_cr/<int:station_id>/<auth_string>", methods=["PUT"])
+def feed_cr(station_id, auth_string):
+    with open("/tmp/put_data.txt", "wb") as f:
+        f.write(request.data)
+    return "OK"
