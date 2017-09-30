@@ -2,7 +2,7 @@ from flask import request
 
 from .. import app
 from ..database import *
-from ..utils.measurements import import_measurement
+from ..utils.measurements import import_dl15_measurement
 from ..utils.pydl15.parse import parse_dl15
 
 
@@ -41,6 +41,6 @@ def feed_data(station_id, auth_string=None):
         return "No data"
 
     name, data = parse_dl15(data)
-    cnt = import_measurement(station, data)
+    cnt = import_dl15_measurement(station, data)
 
     return "Imported %d lines of data" % cnt

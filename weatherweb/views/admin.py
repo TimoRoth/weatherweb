@@ -9,7 +9,7 @@ from ..database import *
 from ..utils.auth import requires_auth
 from ..utils.list_routes import list_simple_routes
 from ..utils.pydl15.parse import parse_dl15
-from ..utils.measurements import import_measurement
+from ..utils.measurements import import_dl15_measurement
 from ..cron import do_fetch
 
 from .forms import AddStationForm, AddSensorForm, ManualFeedForm
@@ -45,6 +45,8 @@ def add_station():
             sta.location = form.location.data
             sta.address = form.address.data
             sta.timezone = form.timezone.data
+            sta.mes_duration = form.mes_duration.data
+            sta.ext_duration = form.ext_duration.data
             db.session.add(sta)
             db.session.commit()
 
@@ -77,6 +79,8 @@ def add_sensor():
         sen.unit = form.unit.data
         sen.group = form.group.data
         sen.position = form.position.data
+        if form.sensor_name.data:
+            sen.sensor_name = form.sensor_name.data
         sen.station = sta
 
         db.session.add(sen)
@@ -85,7 +89,8 @@ def add_sensor():
         flash("Sensor #%s added to station #%s on position %s!" % (sen.id, sta.id, sen.position))
 
         form.position.raw_data = None
-        form.position.data = sen.position + 1
+        if form.position.data:
+            form.position.data = sen.position + 1
 
     return render_template("generic_form.html", form=form, form_dest="add_sensor", title="Add Sensor")
 
@@ -125,7 +130,7 @@ def manual_feed():
             if station is None:
                 return "Station not found!"
 
-            cnt = import_measurement(station, data)
+            cnt = import_dl15_measurement(station, data)
             db.session.commit()
 
             flash("Successfully imported %s data lines!" % cnt)

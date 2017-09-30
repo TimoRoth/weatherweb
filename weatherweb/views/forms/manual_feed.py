@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SelectField
 from wtforms.validators import DataRequired
 
@@ -17,6 +17,6 @@ def get_station_choices(with_auto=True):
     return res
 
 
-class ManualFeedForm(Form):
+class ManualFeedForm(FlaskForm):
     station = SelectField("Station", validators=[DataRequired()], coerce=int, choices=[(-2, "Unset")])
     station_data = TextAreaField("Data", validators=[DataRequired()])

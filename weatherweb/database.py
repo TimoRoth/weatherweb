@@ -26,7 +26,10 @@ class Sensor(db.Model):
     unit = db.Column(db.String(16), nullable=False)
 
     # Sensor data position in DL15 output. 0-Based Column. Col 0 is decimal time.
-    position = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer, nullable=False, index=True)
+
+    # Sensor name in TOA5
+    sensor_name = db.Column(db.String(32), nullable=True, index=True)
 
     station_id = db.Column(db.Integer, db.ForeignKey("station.id", onupdate="CASCADE", ondelete="CASCADE"),
                            nullable=False, index=True)
@@ -39,6 +42,9 @@ class Measurement(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     datetime = db.Column(db.DateTime, nullable=False, index=True)
+
+    # TOA5 RN
+    record_number = db.Column(db.Integer, nullable=True, index=True, unique=True)
 
     station_id = db.Column(db.Integer, db.ForeignKey("station.id", onupdate="CASCADE", ondelete="CASCADE"),
                            nullable=False, index=True)
