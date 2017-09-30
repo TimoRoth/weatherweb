@@ -44,7 +44,7 @@ class Measurement(db.Model):
     datetime = db.Column(db.DateTime, nullable=False, index=True)
 
     # TOA5 RN
-    record_number = db.Column(db.Integer, nullable=True, index=True, unique=True)
+    record_number = db.Column(db.Integer, nullable=True, index=True)
 
     station_id = db.Column(db.Integer, db.ForeignKey("station.id", onupdate="CASCADE", ondelete="CASCADE"),
                            nullable=False, index=True)
