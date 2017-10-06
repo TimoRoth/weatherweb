@@ -14,12 +14,12 @@ def test_chart():
 @app.route("/charts/summary/since/<int:since>")
 @app.route("/charts/summary/since/<int:since>/until/<int:until>")
 def summary(hours=24, since=-1, until=-1):
-    wind_speed_sensor = Sensor.query.get(2)
+    wind_speed_sensor = Sensor.query.get(14)
     wind_dir_sensor = Sensor.query.get(3)
-    temp_sensor = Sensor.query.get(4)
-    humid_sensor = Sensor.query.get(5)
-    rain_sensor = Sensor.query.get(10)
-    bila_sensor = Sensor.query.get(8)
+    temp_sensor = Sensor.query.get(15)
+    humid_sensor = Sensor.query.get(18)
+    rain_sensor = Sensor.query.get(12)
+    bila_sensor = Sensor.query.get(20)
 
     dura_unit = "10min"
 
