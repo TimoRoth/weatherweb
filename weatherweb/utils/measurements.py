@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from ..database import *
+import math
 
 
 def import_dl15_measurement(station: Station, data):
@@ -23,7 +24,7 @@ def import_dl15_measurement(station: Station, data):
                     data = float("nan")
                 else:
                     if line[pos].startswith("?"):
-                        data = float("nan")
+                        data = None
                     else:
                         data = line[pos]
 
@@ -66,6 +67,8 @@ def import_toa5_measurement(station: Station, var_names, data):
                     continue
                 sens_id = sensors[vals[0]]
                 data = float(vals[1])
+                if math.isnan(data):
+                    data = None
                 mesdata.append(dict(measurement_id=mes.id, sensor_id=sens_id, data=data))
 
             db.session.bulk_insert_mappings(MeasurementData, mesdata)
