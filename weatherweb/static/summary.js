@@ -4,7 +4,7 @@ Highcharts.setOptions({
     }
 });
 
-function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_dir_id, temp_id, humid_id, rain_id, bila_id) {
+function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_dir_id, temp_id, humid_id, rain_id, bila_id, bp_id) {
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
@@ -37,6 +37,8 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var bila_name = "Strahlung - W/m²";
     var rain_color = "#0018ff";
     var rain_name = "Niederschlag - mm/" + dura_unit;
+    var bp_color = "#922428";
+    var bp_name = "Luftdruck - mbar"
 
     chart.showLoading("Lade Daten...");
     chart.yAxis[0].remove();
@@ -45,11 +47,13 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     chart.addAxis({title: {text: wind_name, style: {"color": wind_color}}, id: "wind_speed_axis", showEmpty: false, gridLineWidth: 0, floor: 0, opposite: true}, false);
     chart.addAxis({title: {text: humi_name, style: {"color": humi_color}}, id: "humid_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, max: 100}, false);
     chart.addAxis({title: {text: bila_name, style: {"color": bila_color}}, id: "bila_axis", showEmpty: false, gridLineWidth: 0}, false);
+    chart.addAxis({title: {text:   bp_name, style: {"color":   bp_color}}, id: "bp_axis", showEmpty: false, gridLineWidth: 0}, false);
     var rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area"}, false, false);
     var temp_series = chart.addSeries({name: temp_name, yAxis: "temp_axis", color: temp_color}, false, false);
     var wind_series = chart.addSeries({name: wind_name, yAxis: "wind_speed_axis", color: wind_color}, false, false);
     var humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color, visible: false}, false, false);
     var bila_series = chart.addSeries({name: bila_name, yAxis: "bila_axis", color: bila_color, visible: false}, false, false);
+    var bp_series   = chart.addSeries({name: bila_name, yAxis: "bp_axis", color: bp_color, visible: false}, false, false);
 
     var update_function = function() {
         chart.redraw(true);
@@ -59,6 +63,7 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
             humi_series.setData(data[humid_id].data, false);
             bila_series.setData(data[bila_id].data, false);
             rain_series.setData(data[rain_id].data, false);
+            bp_series.setData(data[bp_id].data, false);
             chart.hideLoading();
             chart.redraw(true);
         });

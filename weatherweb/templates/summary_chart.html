@@ -8,6 +8,6 @@
 {% block body %}
 <div id="main_chart" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;"></div>
 <script>
-create_summary_chart("main_chart", "{{ data_url }}", "{{ dura_unit }}", {{ wind_speed_sensor.id }}, {{ wind_dir_sensor.id }}, {{ temp_sensor.id }}, {{ humid_sensor.id }}, {{ rain_sensor.id }}, {{ bila_sensor.id }});
+create_summary_chart("main_chart", "{{ data_url }}", "{{ dura_unit }}", {{ wind_speed_sensor.id }}, {{ wind_dir_sensor.id }}, {{ temp_sensor.id }}, {{ humid_sensor.id }}, {{ rain_sensor.id }}, {{ bila_sensor.id }}, {{ bp_sensor.id }});
 </script>
 {% endblock %}
