@@ -21,6 +21,7 @@ def summary(hours=24, since=-1, until=-1):
     rain_sensor = Sensor.query.get(12)
     bila_sensor = Sensor.query.get(20)
     bp_sensor = Sensor.query.get(26)
+    dew_sensor = Sensor.query.get(27)
 
     dura_unit = "10min"
 
@@ -37,12 +38,12 @@ def summary(hours=24, since=-1, until=-1):
 
     data_url = url_for("multi_sensor_data",
                        sensor_ids=",".join(map(str, [wind_speed_sensor.id, wind_dir_sensor.id, temp_sensor.id,
-                                                     humid_sensor.id, rain_sensor.id, bila_sensor.id, bp_sensor.id])),
+                                                     humid_sensor.id, rain_sensor.id, bila_sensor.id, bp_sensor.id, dew_sensor.id])),
                        **kwargs)
 
     return render_template("summary_chart.html", hours=hours, since=since, until=until, data_url=data_url, dura_unit=dura_unit,
                            wind_speed_sensor=wind_speed_sensor, wind_dir_sensor=wind_dir_sensor, bila_sensor=bila_sensor,
-                           temp_sensor=temp_sensor, humid_sensor=humid_sensor, rain_sensor=rain_sensor, bp_sensor=bp_sensor)
+                           temp_sensor=temp_sensor, humid_sensor=humid_sensor, rain_sensor=rain_sensor, bp_sensor=bp_sensor, dew_sensor=dew_sensor)
 
 
 @app.route("/charts/temp_and_rain/<int:station_id>")
