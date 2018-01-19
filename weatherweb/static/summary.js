@@ -31,9 +31,9 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var temp_name = "Temperatur - °C";
     var wind_color = "#1b9e77";
     var wind_name = "Windgeschwindigkeit - m/s";
-    var humi_color = "#7570b3";
+    var humi_color = "#cc2529";
     var humi_name = "Luftfeuchtigkeit - %";
-    var bila_color = "#cc2529";
+    var bila_color = "#e7298a";
     var bila_name = "Strahlung - W/m²";
     var rain_color = "#0018ff";
     var rain_name = "Niederschlag - mm/" + dura_unit;
