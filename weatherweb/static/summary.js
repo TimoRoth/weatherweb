@@ -39,7 +39,7 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var rain_name = "Niederschlag - mm/" + dura_unit;
     var bp_color = "#922428";
     var bp_name = "Luftdruck - mbar"
-    var dew_color = "#4d4d4d"
+    var dew_color = "#396ab1"
     var dew_name = "Taupunkt - °C"
 
     chart.showLoading("Lade Daten...");
