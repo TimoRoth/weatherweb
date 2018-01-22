@@ -1,0 +1,20 @@
+{%  extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    {% assets "charts_js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    <script type="text/javascript" src="{{ url_for("static", filename="windspeeds.js") }}"></script>
+{% endblock %}
+{% block title %}{{ station.location }} - Wind Speeds{% endblock %}
+{% block body %}
+<div id="main_chart" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;"></div>
+<script>
+var chart = create_windspeed_chart("main_chart", data_url);
+{% for sensor in windspeed_sensors %}
+ {% if since >= 0 %}
+  add_temp_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, since=since, until=until) }}");
+ {% else %}
+  add_temp_sensor(chart, "{{ url_for("sensor_data", sensor_id=sensor.id, start=hours, start_mult=1) }}");
+ {% endif %}
+{% endfor %}
+</script>
+{% endblock %}
