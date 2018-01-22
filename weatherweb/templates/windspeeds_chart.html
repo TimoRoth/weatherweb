@@ -8,6 +8,6 @@
 {% block body %}
 <div id="main_chart" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;"></div>
 <script>
-create_windspeed_chart("main_chart", data_url);
+create_windspeed_chart("main_chart", "{{ data_url }}");
 </script>
 {% endblock %}
