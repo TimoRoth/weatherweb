@@ -6,10 +6,16 @@
 <h2>Spezial</h2>
 <ul>
     <li>
-        Temperatur / Niederschlag:&nbsp;
+        Temperature / Rain:&nbsp;
         <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=24) }}">24h</a>&nbsp;
         <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=48) }}">48h</a>&nbsp;
         <a href="{{ url_for("temp_and_rain", station_id=station.id, hours=72) }}">72h</a>&nbsp;
+    </li>
+    <li>
+        Wind Speeds:&nbsp;
+        <a href="{{ url_for("windspeeds", station_id=station.id, hours=24) }}">24h</a>&nbsp;
+        <a href="{{ url_for("windspeeds", station_id=station.id, hours=48) }}">48h</a>&nbsp;
+        <a href="{{ url_for("windspeeds", station_id=station.id, hours=72) }}">72h</a>&nbsp;
     </li>
 </ul>
 <h2>Sensoren</h2>

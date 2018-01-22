@@ -4,6 +4,22 @@ from .. import app
 from ..database import *
 
 
+def process_time_info(hours, since, until):
+    kwargs = {"start": hours, "start_mult": 1}
+    dura_unit = "10min"
+
+    if since >= 0:
+        kwargs = {"since": since, "until": until}
+    elif hours > 5 * 24:
+        kwargs = {"start": hours, "start_mult": 1, "hourly_avg": True}
+        dura_unit = "h"
+
+    if request.args.get("hourly_avg") is not None:
+        kwargs["hourly_avg"] = True
+
+    return kwargs, dura_unit
+
+
 @app.route("/test")
 def test_chart():
     return render_template("base_chart.html")
@@ -23,18 +39,7 @@ def summary(hours=24, since=-1, until=-1):
     bp_sensor = Sensor.query.get(26)
     dew_sensor = Sensor.query.get(27)
 
-    dura_unit = "10min"
-
-    if since >= 0:
-        kwargs = {"since": since, "until": until}
-    elif hours > 5 * 24:
-        kwargs = {"start": hours, "start_mult": 1, "hourly_avg": True}
-        dura_unit = "h"
-    else:
-        kwargs = {"start": hours, "start_mult": 1}
-
-    if request.args.get("hourly_avg") is not None:
-        kwargs["hourly_avg"] = True
+    kwargs, dura_unit = process_time_info(hours, since, until)
 
     data_url = url_for("multi_sensor_data",
                        sensor_ids=",".join(map(str, [wind_speed_sensor.id, wind_dir_sensor.id, temp_sensor.id,
@@ -62,6 +67,25 @@ def temp_and_rain(station_id, hours=48, since=-1, until=-1):
     return render_template("temp_and_rain_chart.html", hours=hours, station=station,
                            temp_sensors=temp_sensors, rain_sensors=rain_sensors,
                            since=since, until=until)
+
+
+@app.route("/charts/windspeeds/<int:station_id>")
+@app.route("/charts/windspeeds/<int:station_id>/last_hours/<int:hours>")
+@app.route("/charts/windspeeds/<int:station_id>/since/<int:since>")
+@app.route("/charts/windspeeds/<int:station_id>/since/<int:since>/until/<int:until>")
+def windspeeds(station_id, hours=48, since=-1, until=-1):
+    station = Station.query.get(station_id)
+
+    if station is None:
+        return "Station not found"
+
+    kwargs, dura_unit = process_time_info(hours, since, until)
+
+    windspeed_sensors = Sensor.query.filter(Sensor.station == station).filter(Sensor.group == "windspeed").all()
+    data_url = url_for("multi_sensor_data", sensor_ids=",".join([str(sens.id) for sens in windspeed_sensors]), **kwargs)
+
+    return render_template("windspeeds_chart.html", hours=hours, station=station, data_url=data_url,
+                           windspeed_sensors=windspeed_sensors, since=since, until=until)
 
 
 @app.route("/charts/show_sensor/<int:sensor_id>")
