@@ -4,7 +4,7 @@ Highcharts.setOptions({
     }
 });
 
-function create_tnr_chart(div_id, data_url) {
+function create_windspeed_chart(div_id, data_url) {
     var chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
