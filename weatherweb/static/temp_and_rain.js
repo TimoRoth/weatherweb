@@ -5,7 +5,7 @@ Highcharts.setOptions({
 });
 
 function create_tnr_chart(div_id) {
-    var chart = new Highcharts.Chart({
+    const chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
             alignTicks: false,
@@ -48,7 +48,7 @@ function add_temp_sensor(chart, url) {
 
 function add_rain_sensor(chart, url) {
     $.getJSON(url, function(jdata) {
-        var ax = chart.get("rain_axis");
+        const ax = chart.get("rain_axis");
         ax.setTitle({title: {text: "Niederschlag - " + jdata.aux.unit, style: {"color": "#0018FF"}}});
         chart.addSeries({
             name: jdata.aux.sensor_name + " - " + jdata.aux.unit,

@@ -5,7 +5,7 @@ Highcharts.setOptions({
 });
 
 function create_chart(div_id, url) {
-    var chart = new Highcharts.Chart({
+    const chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
             alignTicks: false,
@@ -33,9 +33,9 @@ function create_chart(div_id, url) {
     chart.addAxis({title: {text: "..."}, id: "main_axis"});
     chart.addSeries({yAxis: "main_axis", id: "main_series", name: "..."});
     $.getJSON(url, function(jdata) {
-        var ax = chart.get("main_axis");
-        var series = chart.get("main_series");
-        var title = jdata.aux.sensor_name + " - " + jdata.aux.unit;
+        const ax = chart.get("main_axis");
+        const series = chart.get("main_series");
+        const title = jdata.aux.sensor_name + " - " + jdata.aux.unit;
         chart.setTitle({text: title}, {});
         ax.setTitle({text: title});
         if(jdata.aux.sensor_group == "rain") {

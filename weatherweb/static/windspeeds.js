@@ -5,7 +5,7 @@ Highcharts.setOptions({
 });
 
 function create_windspeed_chart(div_id, data_url) {
-    var chart = new Highcharts.Chart({
+    const chart = new Highcharts.Chart({
         chart: {
             renderTo: div_id,
             alignTicks: false,
@@ -33,12 +33,12 @@ function create_windspeed_chart(div_id, data_url) {
     chart.addAxis({title: {text: "Wind Speed - m/s"}, id: "windspeed_axis"});
 
     $.getJSON(data_url, function(jdata) {
-        for(var index in jdata) {
+        for(const index in jdata) {
             if (!jdata.hasOwnProperty(index))
                 continue;
 
-            var aux = jdata[index]["aux"];
-            var data = jdata[index]["data"];
+            const aux = jdata[index]["aux"];
+            const data = jdata[index]["data"];
 
             chart.addSeries({
                 name: aux.sensor_name + " - " + aux.unit,
