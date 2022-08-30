@@ -50,13 +50,13 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     chart.addAxis({title: {text: humi_name, style: {"color": humi_color}}, id: "humid_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, max: 100}, false);
     chart.addAxis({title: {text: bila_name, style: {"color": bila_color}}, id: "bila_axis", showEmpty: false, gridLineWidth: 0}, false);
     chart.addAxis({title: {text:   bp_name, style: {"color":   bp_color}}, id: "bp_axis", showEmpty: false, gridLineWidth: 0}, false);
-    const rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area"}, false, false);
-    const temp_series = chart.addSeries({name: temp_name, yAxis: "temp_axis", color: temp_color}, false, false);
-    const wind_series = chart.addSeries({name: wind_name, yAxis: "wind_speed_axis", color: wind_color, visible: false}, false, false);
-    const humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color, visible: false}, false, false);
-    const bila_series = chart.addSeries({name: bila_name, yAxis: "bila_axis", color: bila_color, visible: false}, false, false);
-    const bp_series   = chart.addSeries({name:   bp_name, yAxis: "bp_axis", color: bp_color}, false, false);
-    const dew_series  = chart.addSeries({name:  dew_name, yAxis: "temp_axis", color: dew_color}, false, false);
+    const rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area", data: []}, false, false);
+    const temp_series = chart.addSeries({name: temp_name, yAxis: "temp_axis", color: temp_color, data: []}, false, false);
+    const wind_series = chart.addSeries({name: wind_name, yAxis: "wind_speed_axis", color: wind_color, visible: false, data: []}, false, false);
+    const humi_series = chart.addSeries({name: humi_name, yAxis: "humid_axis", color: humi_color, visible: false, data: []}, false, false);
+    const bila_series = chart.addSeries({name: bila_name, yAxis: "bila_axis", color: bila_color, visible: false, data: []}, false, false);
+    const bp_series   = chart.addSeries({name:   bp_name, yAxis: "bp_axis", color: bp_color, data: []}, false, false);
+    const dew_series  = chart.addSeries({name:  dew_name, yAxis: "temp_axis", color: dew_color, data: []}, false, false);
 
     const update_function = function() {
         $.getJSON(data_url, function(data) {

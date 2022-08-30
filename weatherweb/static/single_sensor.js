@@ -31,7 +31,7 @@ function create_chart(div_id, url) {
     chart.showLoading("Loading Data...");
     chart.yAxis[0].remove();
     chart.addAxis({title: {text: "..."}, id: "main_axis"});
-    chart.addSeries({yAxis: "main_axis", id: "main_series", name: "..."});
+    chart.addSeries({yAxis: "main_axis", id: "main_series", name: "...", data: []});
     $.getJSON(url, function(jdata) {
         const ax = chart.get("main_axis");
         const series = chart.get("main_series");
