@@ -19249,7 +19249,7 @@
                     }
                     // loop through this axis' series
                     axis.series.forEach(function (series) {
-                        if (series.visible ||
+                        if (true || series.visible ||
                             !chart.options.chart.ignoreHiddenSeries) {
                             var seriesOptions = series.options;
                             var xData = void 0,
