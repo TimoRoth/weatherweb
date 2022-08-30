@@ -2,7 +2,6 @@ import sys
 
 from sqlalchemy.exc import SQLAlchemyError
 from flask import render_template, flash, url_for, request, Response, redirect
-from flask_cachecontrol import dont_cache
 
 from .. import app
 from ..database import *

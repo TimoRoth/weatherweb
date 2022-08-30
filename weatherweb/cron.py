@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from flask_script import Manager
 import threading
 import csv
 
@@ -8,9 +7,6 @@ from .database import *
 from .utils.pydl15.pydl15 import DL15
 from .utils.pydl15.parse import parse_dl15_gen
 from .utils.measurements import import_dl15_measurement, import_toa5_measurement
-
-
-manager = Manager(app)
 
 
 def handle_dl15(station: Station, dl15: DL15):
@@ -49,7 +45,7 @@ def handle_toa5(station: Station, toahandle):
     print("Imported %s data lines for Station %s" % (cnt, station.name))
 
 
-@manager.command
+@app.cli.command("fetchdata")
 def fetchdata():
     """Fetch data from all registered stations"""
 
@@ -97,7 +93,7 @@ def do_fetch():
     t.start()
 
 
-@manager.command
+@app.cli.command("init_db")
 def init_db():
     """Initialize database"""
     app.config["SQLALCHEMY_ECHO"] = True
