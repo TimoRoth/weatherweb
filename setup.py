@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='weatherweb',
     version='0.1',
-    url='http://www.geographie.uni-bremen.de/en/climate-geography',
+    url='https://www.geographie.uni-bremen.de/en/climate-geography',
     license='MIT',
     author='Timo Rothepieler',
     author_email='timo.rothenpieler@uni-bremen.de',
