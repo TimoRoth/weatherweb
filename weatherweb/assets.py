@@ -12,10 +12,16 @@ charts_js = Bundle("jquery.js",
                    "highcharts-export-data.js",
                    "highcharts-accessibility.js",
                    filters="jsmin", output="gen/packed_charts.js")
+charts_js_src = Bundle("jquery.src.js",
+                       "highcharts.src.js",
+                       "highcharts-exporting.src.js",
+                       "highcharts-export-data.src.js",
+                       "highcharts-accessibility.src.js",
+                       output="gen/packed_charts_src.js")
 css_all = Bundle("style.css", filters="cssmin", output="gen/packed.css")
 
 assets.register("default_js", default_js)
-assets.register("charts_js", charts_js)
+assets.register("charts_js", charts_js_src)
 assets.register("css_all", css_all)
 
 
