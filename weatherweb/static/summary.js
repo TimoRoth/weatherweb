@@ -68,6 +68,13 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
             rain_series.setData(data[rain_id].data, false);
             bp_series.setData(data[bp_id].data, false);
             dew_series.setData(data[dew_id].data, false);
+
+            // Work around issue where data min/max is not calculated for hidden series
+            // resulting in an error on redraw
+            chart.options.chart.ignoreHiddenSeries = false;
+            chart.redraw(false);
+            chart.options.chart.ignoreHiddenSeries = true;
+
             chart.hideLoading();
             chart.redraw(true);
         });
