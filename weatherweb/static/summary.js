@@ -44,10 +44,10 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
 
     chart.showLoading("Lade Daten...");
     chart.yAxis[0].remove();
-    chart.addAxis({title: {text: rain_name, style: {"color": rain_color}}, id: "rain_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, max: 7.5}, false);
+    chart.addAxis({title: {text: rain_name, style: {"color": rain_color}}, id: "rain_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, min: 0, max: 7.5}, false);
     chart.addAxis({title: {text: temp_name, style: {"color": temp_color}}, id: "temp_axis", showEmpty: false}, false);
     chart.addAxis({title: {text: wind_name, style: {"color": wind_color}}, id: "wind_speed_axis", showEmpty: false, gridLineWidth: 0, floor: 0, opposite: true}, false);
-    chart.addAxis({title: {text: humi_name, style: {"color": humi_color}}, id: "humid_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, max: 100}, false);
+    chart.addAxis({title: {text: humi_name, style: {"color": humi_color}}, id: "humid_axis", showEmpty: false, gridLineWidth: 0, opposite: true, floor: 0, min: 0, max: 100}, false);
     chart.addAxis({title: {text: bila_name, style: {"color": bila_color}}, id: "bila_axis", showEmpty: false, gridLineWidth: 0}, false);
     chart.addAxis({title: {text:   bp_name, style: {"color":   bp_color}}, id: "bp_axis", showEmpty: false, gridLineWidth: 0}, false);
     const rain_series = chart.addSeries({name: rain_name, yAxis: "rain_axis", color: rain_color, type: "area", data: []}, false, false);
