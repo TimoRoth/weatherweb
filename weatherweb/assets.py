@@ -21,7 +21,7 @@ charts_js_src = Bundle("jquery.src.js",
 css_all = Bundle("style.css", filters="cssmin", output="gen/packed.css")
 
 assets.register("default_js", default_js)
-assets.register("charts_js", charts_js_src)
+assets.register("charts_js", charts_js)
 assets.register("css_all", css_all)
 
 
