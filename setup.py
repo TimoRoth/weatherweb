@@ -26,11 +26,5 @@ setup(
         "pyserial",
         "pytz",
         "tzlocal",
-    ],
-
-    entry_points={
-        'console_scripts': [
-            'weatherweb_manage = weatherweb.cron:run_manager'
-        ]
-    }
+    ]
 )

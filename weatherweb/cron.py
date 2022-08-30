@@ -98,7 +98,3 @@ def init_db():
     """Initialize database"""
     app.config["SQLALCHEMY_ECHO"] = True
     db.create_all()
-
-
-def run_manager():
-    return manager.run()
