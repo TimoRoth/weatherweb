@@ -58,8 +58,7 @@ function create_summary_chart(div_id, data_url, dura_unit, wind_speed_id, wind_d
     var bp_series   = chart.addSeries({name:   bp_name, yAxis: "bp_axis", color: bp_color}, false, false);
     var dew_series  = chart.addSeries({name:  dew_name, yAxis: "temp_axis", color: dew_color}, false, false);
 
-    var update_function = function() {
-        chart.redraw(true);
+    const update_function = function() {
         $.getJSON(data_url, function(data) {
             temp_series.setData(data[temp_id].data, false);
             wind_series.setData(data[wind_speed_id].data, false);
